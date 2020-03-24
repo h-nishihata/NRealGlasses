@@ -9,15 +9,19 @@
 
 namespace NRKernal
 {
-    /**
-    * @brief A filter for trackable queries.
-    */
+    /// <summary>
+    /// A filter for trackable queries.
+    /// </summary>
     public enum NRTrackableQueryFilter
     {
-        // Indicates available trackables.
+        /// <summary>
+        /// Indicates available trackables.
+        /// </summary>
         All,
 
-        // Indicates new trackables detected in the current NRSDK Frame.
+        /// <summary>
+        /// Indicates new trackables detected in the current NRSDK Frame.
+        /// </summary>
         New,
     }
 }

@@ -11,11 +11,12 @@ namespace NRKernal
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.Text;
     using UnityEngine;
 
-    /**
-    * @brief 6-dof Trackable Image Tracking's Native API .
-    */
+    /// <summary>
+    /// 6-dof Trackable Image Tracking's Native API .
+    /// </summary>
     internal partial class NativeTrackableImage
     {
         private NativeInterface m_NativeInterface;

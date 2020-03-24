@@ -14,7 +14,6 @@ namespace NRKernal
     using ICSharpCode.SharpZipLib.Zip;
     using System;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
     public class ZipUtility
     {
         #region ZipCallback
@@ -35,11 +34,6 @@ namespace NRKernal
             {
             }
 
-            /// <summary>
-            /// 压缩单个文件或文件夹前执行的回调
-            /// </summary>
-            /// <param name="_entry"></param>
-            /// <returns>如果返回true，则压缩文件或文件夹，反之则不压缩文件或文件夹</returns>
             public virtual bool OnPreZip(ZipEntry _entry)
             {
                 if (OnPreZipCallback != null)
@@ -49,10 +43,6 @@ namespace NRKernal
                 return true;
             }
 
-            /// <summary>
-            /// 压缩单个文件或文件夹后执行的回调
-            /// </summary>
-            /// <param name="_entry"></param>
             public virtual void OnPostZip(ZipEntry _entry)
             {
                 if (OnPostZipCallback != null)
@@ -61,10 +51,6 @@ namespace NRKernal
                 }
             }
 
-            /// <summary>
-            /// 压缩执行完毕后的回调
-            /// </summary>
-            /// <param name="_result">true表示压缩成功，false表示压缩失败</param>
             public virtual void OnFinished(bool _result)
             {
                 if (OnFinishedCallback != null)
@@ -92,11 +78,7 @@ namespace NRKernal
             public UnzipCallback(Action<bool> onfinish) : this(null, null, onfinish)
             {
             }
-            /// <summary>
-            /// 解压单个文件或文件夹前执行的回调
-            /// </summary>
-            /// <param name="_entry"></param>
-            /// <returns>如果返回true，则压缩文件或文件夹，反之则不压缩文件或文件夹</returns>
+
             public virtual bool OnPreUnzip(ZipEntry _entry)
             {
                 if (OnPreZipCallback != null)
@@ -106,10 +88,6 @@ namespace NRKernal
                 return true;
             }
 
-            /// <summary>
-            /// 解压单个文件或文件夹后执行的回调
-            /// </summary>
-            /// <param name="_entry"></param>
             public virtual void OnPostUnzip(ZipEntry _entry)
             {
                 if (OnPostZipCallback != null)
@@ -118,10 +96,6 @@ namespace NRKernal
                 }
             }
 
-            /// <summary>
-            /// 解压执行完毕后的回调
-            /// </summary>
-            /// <param name="_result">true表示解压成功，false表示解压失败</param>
             public virtual void OnFinished(bool _result)
             {
                 if (OnFinishedCallback != null)
@@ -132,14 +106,6 @@ namespace NRKernal
         }
         #endregion
 
-        /// <summary>
-        /// 压缩文件和文件夹
-        /// </summary>
-        /// <param name="_fileOrDirectoryArray">文件夹路径和文件名</param>
-        /// <param name="_outputPathName">压缩后的输出路径文件名</param>
-        /// <param name="_password">压缩密码</param>
-        /// <param name="_zipCallback">ZipCallback对象，负责回调</param>
-        /// <returns></returns>
         public static bool Zip(string[] _fileOrDirectoryArray, string _outputPathName, string _password = null, ZipCallback _zipCallback = null)
         {
             if ((null == _fileOrDirectoryArray) || string.IsNullOrEmpty(_outputPathName))
@@ -182,14 +148,6 @@ namespace NRKernal
             return true;
         }
 
-        /// <summary>
-        /// 解压Zip包
-        /// </summary>
-        /// <param name="_filePathName">Zip包的文件路径名</param>
-        /// <param name="_outputPath">解压输出路径</param>
-        /// <param name="_password">解压密码</param>
-        /// <param name="_unzipCallback">UnzipCallback对象，负责回调</param>
-        /// <returns></returns>
         public static bool UnzipFile(string _filePathName, string _outputPath, string _password = null, UnzipCallback _unzipCallback = null)
         {
             if (string.IsNullOrEmpty(_filePathName) || string.IsNullOrEmpty(_outputPath))
@@ -215,14 +173,6 @@ namespace NRKernal
             }
         }
 
-        /// <summary>
-        /// 解压Zip包
-        /// </summary>
-        /// <param name="_fileBytes">Zip包字节数组</param>
-        /// <param name="_outputPath">解压输出路径</param>
-        /// <param name="_password">解压密码</param>
-        /// <param name="_unzipCallback">UnzipCallback对象，负责回调</param>
-        /// <returns></returns>
         public static bool UnzipFile(byte[] _fileBytes, string _outputPath, string _password = null, UnzipCallback _unzipCallback = null)
         {
             if ((null == _fileBytes) || string.IsNullOrEmpty(_outputPath))
@@ -243,14 +193,6 @@ namespace NRKernal
             return result;
         }
 
-        /// <summary>
-        /// 解压Zip包
-        /// </summary>
-        /// <param name="_inputStream">Zip包输入流</param>
-        /// <param name="_outputPath">解压输出路径</param>
-        /// <param name="_password">解压密码</param>
-        /// <param name="_unzipCallback">UnzipCallback对象，负责回调</param>
-        /// <returns></returns>
         public static bool UnzipFile(Stream _inputStream, string _outputPath, string _password = null, UnzipCallback _unzipCallback = null)
         {
             if ((null == _inputStream) || string.IsNullOrEmpty(_outputPath))
@@ -328,14 +270,6 @@ namespace NRKernal
             return true;
         }
 
-        /// <summary>
-        /// 压缩文件
-        /// </summary>
-        /// <param name="_filePathName">文件路径名</param>
-        /// <param name="_parentRelPath">要压缩的文件的父相对文件夹</param>
-        /// <param name="_zipOutputStream">压缩输出流</param>
-        /// <param name="_zipCallback">ZipCallback对象，负责回调</param>
-        /// <returns></returns>
         private static bool ZipFile(string _filePathName, string _parentRelPath, ZipOutputStream _zipOutputStream, ZipCallback _zipCallback = null)
         {
             //Crc32 crc32 = new Crc32();
@@ -384,14 +318,6 @@ namespace NRKernal
             return true;
         }
 
-        /// <summary>
-        /// 压缩文件夹
-        /// </summary>
-        /// <param name="_path">要压缩的文件夹</param>
-        /// <param name="_parentRelPath">要压缩的文件夹的父相对文件夹</param>
-        /// <param name="_zipOutputStream">压缩输出流</param>
-        /// <param name="_zipCallback">ZipCallback对象，负责回调</param>
-        /// <returns></returns>
         private static bool ZipDirectory(string _path, string _parentRelPath, ZipOutputStream _zipOutputStream, ZipCallback _zipCallback = null)
         {
             ZipEntry entry = null;
@@ -431,5 +357,4 @@ namespace NRKernal
             return true;
         }
     }
-    /// @endcond
 }

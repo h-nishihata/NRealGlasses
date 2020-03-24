@@ -12,7 +12,6 @@ namespace NRKernal
     using System.Diagnostics;
     using System.Text;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
     /// <summary>
     /// Misc helper methods for running shell commands.
     /// </summary>
@@ -63,5 +62,4 @@ namespace NRKernal
             }
         }
     }
-    /// @endcond
 }

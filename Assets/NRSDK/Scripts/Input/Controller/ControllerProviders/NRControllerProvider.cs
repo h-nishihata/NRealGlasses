@@ -12,15 +12,17 @@ namespace NRKernal
     using System;
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
-    /**
-    * @brief This class obtains the runtime information of controller devices through a native controller plugin, and would use these info to update controller states.
-    */
-    internal class NRControllerProvider : ControllerProviderBase
+    /// <summary>
+    /// This class obtains the runtime information of controller devices through a native controller plugin, and would use these info to update controller states.
+    /// </summary>
+    internal partial class NRControllerProvider : ControllerProviderBase
     {
         private NativeController m_NativeController;
         private int m_ProcessedFrame;
         private bool m_NeedInit = true;
+        private float[] homePressingTimerArr = new float[NRInput.MAX_CONTROLLER_STATE_COUNT];
+
+        private const float HOME_LONG_PRESS_TIME = 1.1f;
 
         public NRControllerProvider(ControllerState[] states) : base(states)
         {
@@ -33,28 +35,20 @@ namespace NRKernal
             {
                 if (!Inited)
                     return 0;
-#if !UNITY_EDITOR_OSX
                 return m_NativeController.GetControllerCount();
-#else   
-                return 0;
-#endif
             }
         }
 
         public override void OnPause()
         {
-#if !UNITY_EDITOR_OSX
             if (m_NativeController != null)
                 m_NativeController.Pause();
-#endif
         }
 
         public override void OnResume()
         {
-#if !UNITY_EDITOR_OSX
             if (m_NativeController != null)
                 m_NativeController.Resume();
-#endif
         }
 
         public override void Update()
@@ -70,6 +64,8 @@ namespace NRKernal
             if (!Inited)
                 return;
             int availableCount = ControllerCount;
+            if (availableCount > 0 && NRInput.GetControllerAvailableFeature(ControllerAvailableFeature.CONTROLLER_AVAILABLE_FEATURE_POSITION))
+                UpdateHeadPoseToController();
             for (int i = 0; i < availableCount; i++)
             {
                 UpdateControllerState(i);
@@ -78,28 +74,34 @@ namespace NRKernal
 
         public override void OnDestroy()
         {
-#if !UNITY_EDITOR_OSX
             if (m_NativeController != null)
             {
                 m_NativeController.Destroy();
                 m_NativeController = null;
             }
-#endif
         }
 
         public override void TriggerHapticVibration(int index, float durationSeconds = 0.1f, float frequency = 1000f, float amplitude = 0.5f)
         {
-            if (m_NativeController != null && NRInput.GetControllerAvailableFeature(ControllerAvailableFeature.CONTROLLER_AVAILABLE_FEATURE_HAPTIC_VIBRATE))
+            if (!Inited)
+                return;
+            if (states[index].controllerType == ControllerType.CONTROLLER_TYPE_PHONE)
             {
-                Int64 durationNano = (Int64)(durationSeconds * 1000000000);
-                m_NativeController.TriggerHapticVibrate(index, durationNano, frequency, amplitude);
+                PhoneVibrateTool.TriggerVibrate(durationSeconds);
+            }
+            else
+            {
+                if (m_NativeController != null && NRInput.GetControllerAvailableFeature(ControllerAvailableFeature.CONTROLLER_AVAILABLE_FEATURE_HAPTIC_VIBRATE))
+                {
+                    Int64 durationNano = (Int64)(durationSeconds * 1000000000);
+                    m_NativeController.TriggerHapticVibrate(index, durationNano, frequency, amplitude);
+                }
             }
         }
 
         private void InitNativeController()
         {
             m_NativeController = new NativeController();
-#if !UNITY_EDITOR_OSX
             if (m_NativeController.Init())
             {
                 Inited = true;
@@ -108,9 +110,8 @@ namespace NRKernal
             else
             {
                 m_NativeController = null;
-                Debug.LogError("NRControllerProvider Init Failed !!");
+                NRDebugger.LogError("NRControllerProvider Init Failed !!");
             }
-#endif
             m_NeedInit = false;
         }
 
@@ -118,6 +119,10 @@ namespace NRKernal
         {
             m_NativeController.UpdateState(index);
             states[index].controllerType = m_NativeController.GetControllerType(index);
+#if UNITY_EDITOR
+            if (NRInput.EmulateVirtualDisplayInEditor)
+                states[index].controllerType = ControllerType.CONTROLLER_TYPE_PHONE;
+#endif
             states[index].availableFeature = (ControllerAvailableFeature)m_NativeController.GetAvailableFeatures(index);
             states[index].connectionState = m_NativeController.GetConnectionState(index);
             states[index].rotation = m_NativeController.GetPose(index).rotation;
@@ -142,12 +147,31 @@ namespace NRKernal
 
         private void CheckRecenter(int index)
         {
-            if (states[index].GetButtonDown(ControllerButton.APP))
+            if (states[index].GetButton(ControllerButton.HOME))
             {
-                states[index].recentered = true;
-                m_NativeController.RecenterController(index);
+                homePressingTimerArr[index] += Time.deltaTime;
+                if (homePressingTimerArr[index] > HOME_LONG_PRESS_TIME)
+                {
+                    homePressingTimerArr[index] = float.MinValue;
+                    ResetController(index);
+                }
+            }
+            else
+            {
+                homePressingTimerArr[index] = 0f;
             }
         }
+
+        private void ResetController(int index)
+        {
+            states[index].recentered = true;
+            m_NativeController.RecenterController(index);
+        }
+
+        private void UpdateHeadPoseToController()
+        {
+            if (m_NativeController != null && NRInput.CameraCenter)
+                m_NativeController.UpdateHeadPose(new Pose(NRInput.CameraCenter.position, NRInput.CameraCenter.rotation));
+        }
     }
-    /// @endcond
 }

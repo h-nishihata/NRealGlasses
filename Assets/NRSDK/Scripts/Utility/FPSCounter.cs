@@ -2,7 +2,6 @@
 {
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
     public class FPSCounter : MonoBehaviour
     {
         public int frameRange = 60;
@@ -66,5 +65,4 @@
             LowestFPS = lowest;
         }
     }
-    /// @endcond
 }

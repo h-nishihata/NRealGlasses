@@ -6,11 +6,10 @@ namespace NRKernal.NRExamples
     public class CameraCaptureController : MonoBehaviour
     {
         public RawImage CaptureImage;
+        public Text FrameCount;
         private NRRGBCamTexture RGBCamTexture { get; set; }
 
-        public Text FrameCount;
-
-        void Start()
+        private void Start()
         {
             RGBCamTexture = new NRRGBCamTexture();
             CaptureImage.texture = RGBCamTexture.GetTexture();
@@ -19,16 +18,26 @@ namespace NRKernal.NRExamples
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                RGBCamTexture.Play();
-            }
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                RGBCamTexture.Stop();
-            }
-
             FrameCount.text = RGBCamTexture.FrameCount.ToString();
+        }
+
+        public void Play()
+        {
+            RGBCamTexture.Play();
+
+            // The origin texture will be destroyed after call "Stop",
+            // Rebind the texture.
+            CaptureImage.texture = RGBCamTexture.GetTexture();
+        }
+
+        public void Pause()
+        {
+            RGBCamTexture.Pause();
+        }
+
+        public void Stop()
+        {
+            RGBCamTexture.Stop();
         }
 
         void OnDestroy()

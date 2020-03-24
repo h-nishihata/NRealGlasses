@@ -12,9 +12,9 @@ namespace NRKernal
     using System;
     using System.Runtime.InteropServices;
 
-    /**
-    * @brief 6-dof Trackable's Native API .
-    */
+    /// <summary>
+    /// 6-dof Trackable's Native API .
+    /// </summary>
     internal partial class NativeTrackable
     {
         private NativeInterface m_NativeInterface;

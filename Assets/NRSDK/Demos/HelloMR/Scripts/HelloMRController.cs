@@ -2,26 +2,26 @@
 
 namespace NRKernal.NRExamples
 {
-    /**
-    * @brief  Controls the HelloAR example.
-    */
+    /// <summary>
+    /// Controls the HelloAR example.
+    /// </summary>
     public class HelloMRController : MonoBehaviour
     {
-        /**
-        * @brief  A model to place when a raycast from a user touch hits a plane.
-        */
+        /// <summary>
+        /// A model to place when a raycast from a user touch hits a plane.
+        /// </summary>
         public GameObject AndyPlanePrefab;
 
         void Update()
         {
-            // If the player doesn't click the trigger button, we are done with theis update.
+            // If the player doesn't click the trigger button, we are done with this update.
             if (!NRInput.GetButtonDown(ControllerButton.TRIGGER))
             {
                 return;
             }
 
             // Get controller laser origin.
-            Transform laserAnchor = NRInput.AnchorsHelper.GetAnchor(ControllerAnchorEnum.RightLaserAnchor);
+            Transform laserAnchor = NRInput.AnchorsHelper.GetAnchor(NRInput.RaycastMode == RaycastModeEnum.Gaze ? ControllerAnchorEnum.GazePoseTrackerAnchor : ControllerAnchorEnum.RightLaserAnchor);
 
             RaycastHit hitResult;
             if (Physics.Raycast(new Ray(laserAnchor.transform.position, laserAnchor.transform.forward), out hitResult, 10))

@@ -15,7 +15,7 @@ namespace NRKernal
     using System.Runtime.InteropServices;
     using UnityEngine;
 
-    internal class NativeController
+    internal partial class NativeController
     {
         private UInt64 m_ControllerHandle = 0;
         private UInt64[] m_StateHandles = new UInt64[NRInput.MAX_CONTROLLER_STATE_COUNT] { 0, 0 };
@@ -246,7 +246,14 @@ namespace NRKernal
             return Vector3.zero;
         }
 
-        private struct NativeApi
+        public void UpdateHeadPose(Pose hmdPose)
+        {
+            NativeMat4f apiPose;
+            ConversionUtility.UnityPoseToApiPose(hmdPose, out apiPose);
+            NativeApi.NRControllerSetHeadPose(m_ControllerHandle, ref apiPose);
+        }
+
+        private partial struct NativeApi
         {
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRControllerCreate(ref UInt64 out_controller_handle);
@@ -332,6 +339,9 @@ namespace NRKernal
 
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRControllerStateGetTouchPose(UInt64 controller_state_handle, ref NativeVector2f out_controller_touch_pose);
+
+            [DllImport(NativeConstants.NRNativeLibrary)]
+            public static extern NativeResult NRControllerSetHeadPose(UInt64 controller_handle, ref NativeMat4f out_controller_pose);
         };
     }
 }

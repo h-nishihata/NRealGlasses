@@ -27,7 +27,7 @@ namespace NRKernal
 
         private void Start()
         {
-#if UNITY_EDITOR_WIN
+#if UNITY_EDITOR
             DontDestroyOnLoad(this);
             Instance = this;
             NativeEmulatorApi = new NativeEmulator();
@@ -38,7 +38,7 @@ namespace NRKernal
 
         private void OnDestroy()
         {
-#if UNITY_EDITOR_WIN
+#if UNITY_EDITOR
             NativeEmulatorApi.DestorySIMController();
 #endif
         }

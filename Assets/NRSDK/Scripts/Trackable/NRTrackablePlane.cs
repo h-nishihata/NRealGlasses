@@ -13,9 +13,9 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /**
-     * @brief A plane in the real world detected by NRInternel.
-     */
+    /// <summary>
+    /// A plane in the real world detected by NRInternel.
+    /// </summary>
     public class NRTrackablePlane : NRTrackable
     {
         internal NRTrackablePlane(UInt64 nativeHandle, NativeInterface nativeInterface)
@@ -23,26 +23,27 @@ namespace NRKernal
         {
         }
 
-        /**
-         * @brief Get the plane type.
-         * @return Plane type.
-         */
+        /// <summary>
+        /// Get the plane type.
+        /// </summary>
+        /// <returns>Plane type.</returns>
         public TrackablePlaneType GetPlaneType()
         {
             return NativeInterface.NativePlane.GetPlaneType(TrackableNativeHandle);
         }
 
-        /**
-         * @brief Gets the position and orientation of the plane's center in Unity world space.
-         */
+        /// <summary>
+        /// Gets the position and orientation of the plane's center in Unity world space.
+        /// </summary>
+        /// <returns></returns>
         public override Pose GetCenterPose()
         {
             return NativeInterface.NativePlane.GetCenterPose(TrackableNativeHandle);
         }
 
-        /**
-         * @brief Gets the extent of plane in the X dimension, centered on the plane position.
-         */
+        /// <summary>
+        /// Gets the extent of plane in the X dimension, centered on the plane position.
+        /// </summary>
         public float ExtentX
         {
             get
@@ -51,9 +52,9 @@ namespace NRKernal
             }
         }
 
-        /**
-         * @brief Gets the extent of plane in the Z dimension, centered on the plane position.
-         */
+        /// <summary>
+        /// Gets the extent of plane in the Z dimension, centered on the plane position.
+        /// </summary>
         public float ExtentZ
         {
             get
@@ -62,11 +63,10 @@ namespace NRKernal
             }
         }
 
-        /**
-         * @brief Gets a list of points (in clockwise order) in plane coordinate representing a boundary polygon for the plane.
-         * 
-         * @param[out] polygonList A list used to be filled with polygon points.
-         */
+        /// <summary>
+        /// Gets a list of points(in clockwise order) in plane coordinate representing a boundary polygon for the plane.
+        /// </summary>
+        /// <param name="polygonList">polygonList A list used to be filled with polygon points.</param>
         public void GetBoundaryPolygon(List<Vector3> polygonList)
         {
             polygonList.Clear();

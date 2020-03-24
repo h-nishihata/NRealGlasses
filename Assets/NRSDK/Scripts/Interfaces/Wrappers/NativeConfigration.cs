@@ -66,7 +66,7 @@ namespace NRKernal
                         {
                             m_DatabaseHandle = m_NativeTrackableImage.CreateDataBase();
                             result = m_NativeTrackableImage.LoadDataBase(m_DatabaseHandle, config.TrackingImageDatabase.TrackingImageDataPath);
-                            NRDebugger.Log("[LoadDataBase] result : " + result);
+                            NRDebugger.LogFormat("[LoadDataBase] path:{0} result:{1} ", config.TrackingImageDatabase.TrackingImageDataPath, result);
                             result = SetTrackableImageDataBase(m_ConfigHandle, m_DatabaseHandle);
                             NRDebugger.Log("[SetTrackableImageDataBase] result : " + result);
                         }

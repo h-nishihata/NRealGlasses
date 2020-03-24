@@ -3,7 +3,6 @@
     using UnityEngine;
     using UnityEngine.UI;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
     [RequireComponent(typeof(FPSCounter))]
     public class FPSDisplay : MonoBehaviour
     {
@@ -39,5 +38,4 @@
                 stringsFrom00To99[Mathf.Clamp(fpsCounter.LowestFPS, 0, 99)];
         }
     }
-    /// @endcond
 }

@@ -11,9 +11,9 @@ namespace NRKernal
 {
     using UnityEngine;
 
-    /**
-    * @brief Base classes for all trackable monobehaviour objects.
-    */
+    /// <summary>
+    /// Base classes for all trackable monobehaviour objects.
+    /// </summary>
     public class NRTrackableBehaviour : MonoBehaviour
     {
         public NRTrackable Trackable;
@@ -22,7 +22,6 @@ namespace NRKernal
         {
             Trackable = trackable;
         }
-
 
         [HideInInspector, SerializeField]
         protected string m_TrackableName = "";

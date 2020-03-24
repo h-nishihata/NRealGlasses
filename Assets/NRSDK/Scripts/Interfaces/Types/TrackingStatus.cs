@@ -9,41 +9,41 @@
 
 namespace NRKernal
 {
-    /**
-    * @brief Device Tracking State.
-    */
+    /// <summary>
+    /// Device Tracking State.
+    /// </summary>
     public enum TrackingState
     {
-        /**
-         * TRACKING means the object is being tracked and its state is valid.
-         */
+        /// <summary>
+        /// TRACKING means the object is being tracked and its state is valid.
+        /// </summary>
         Tracking = 0,
 
-        /**
-         * PAUSED indicates that NRSDK has paused tracking, 
-         * and the related data is not accurate.  
-         */
+        /// <summary>
+        /// PAUSED indicates that NRSDK has paused tracking, 
+        /// and the related data is not accurate.  
+        /// </summary>
         Paused = 1,
 
-        /**
-         * STOPPED means that NRSDK has stopped tracking, and will never resume tracking. 
-         */
+        /// <summary>
+        /// STOPPED means that NRSDK has stopped tracking, and will never resume tracking. 
+        /// </summary>
         Stopped = 2
     }
 
-    /**
-   * @brief Device Tracking State.
-   */
+    /// <summary>
+    /// Device Tracking State.
+    /// </summary>
     public enum TrackingMode
     {
-        /**
-         * 6Dof mode.
-         */
+        /// <summary>
+        /// 6Dof mode.
+        /// </summary>
         MODE_6DOF = 0,
 
-        /**
-         * 3Dof mode, only rotation.  
-         */
+        /// <summary>
+        /// 3Dof mode, only rotation.  
+        /// </summary>
         MODE_3DOF = 1,
     }
 }

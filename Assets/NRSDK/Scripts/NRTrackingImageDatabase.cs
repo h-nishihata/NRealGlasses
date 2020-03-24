@@ -20,11 +20,10 @@ namespace NRKernal
     using System.Text;
 #endif
 
-    /**
-    * @brief A database storing a list of images to be detected and tracked by NRSDK.
-    * 
-    * An image database supports up to 1000 images. Only one image database can be in use at any given time.
-    */
+    /// <summary>
+    /// A database storing a list of images to be detected and tracked by NRSDK.
+    /// An image database supports up to 1000 images.Only one image database can be in use at any given time.
+    /// </summary>
     public class NRTrackingImageDatabase : ScriptableObject
     {
         [SerializeField]
@@ -88,7 +87,9 @@ namespace NRKernal
         }
 #endif
 
-        // Constructs a new <c>TrackingImageDatabase</c>.
+        /// <summary>
+        /// Constructs a new <c>TrackingImageDatabase</c>.
+        /// </summary>
         public NRTrackingImageDatabase()
         {
 #if UNITY_EDITOR
@@ -96,7 +97,9 @@ namespace NRKernal
 #endif
         }
 
-        // Gets the number of images in the database.
+        /// <summary>
+        /// Gets the number of images in the database.
+        /// </summary>
         public int Count
         {
             get
@@ -110,7 +113,6 @@ namespace NRKernal
 
         /// <summary>
         /// Gets or sets the image at the specified <c>index</c>.
-        ///
         /// You can only modify the database in the Unity editor.
         /// </summary>
         /// <param name="index">The zero-based index of the image entry to get or set.</param>
@@ -208,13 +210,20 @@ namespace NRKernal
                 }
                 for (int i = 0; i < Count; i++)
                 {
-                    var image_info = JsonMapper.ToObject(json_data)[this[i].Name];
-                    str.AppendLine();
-                    str.AppendLine(string.Format("./{0}/{1}", dataPathName, this[i].Name));
-                    str.AppendLine("NFT");
-                    str.AppendLine(string.Format("FILTER {0}", image_info["filter"]));
-                    str.AppendLine(string.Format("MARKER_WIDTH {0}", image_info["physical_width"]));
-                    str.AppendLine(string.Format("MARKER_HEIGHT {0}", image_info["physical_height"]));
+                    var obj = JsonMapper.ToObject(json_data);
+                    if (obj != null)
+                    {
+                        var image_info = obj[this[i].Name];
+                        if (image_info != null)
+                        {
+                            str.AppendLine();
+                            str.AppendLine(string.Format("./{0}/{1}", dataPathName, this[i].Name));
+                            str.AppendLine("NFT");
+                            str.AppendLine(string.Format("FILTER {0}", image_info["filter"]));
+                            str.AppendLine(string.Format("MARKER_WIDTH {0}", image_info["physical_width"]));
+                            str.AppendLine(string.Format("MARKER_HEIGHT {0}", image_info["physical_height"]));
+                        }
+                    }
                 }
 
                 File.WriteAllText(TrackingImageDataPath + "markers.dat", str.ToString());
@@ -240,6 +249,7 @@ namespace NRKernal
 
             UpdateClipVersion();
         }
+
         /// @endcond
         /// 
         private void UpdateClipVersion()

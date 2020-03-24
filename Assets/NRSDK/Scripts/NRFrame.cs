@@ -13,28 +13,29 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /**
-     * @brief Holds information about NR Device's pose in the world coordinate, trackables, etc..
-     * 
-     * Through this class, application can get the infomation of current frame. 
-     * It contains session status,lost tracking reason,device pose,trackables, etc..
-     */
-    internal partial class NRFrame
+    /// <summary>
+    /// Holds information about NR Device's pose in the world coordinate, trackables, etc..
+    /// Through this class, application can get the infomation of current frame.
+    /// It contains session status, lost tracking reason, device pose, trackables, etc..
+    /// </summary>
+    public partial class NRFrame
     {
-        /**
-         * @brief Get the tracking state of HMD.
-         */
+        private static SessionState m_TrackingStatus = SessionState.UnInitialize;
+
+        /// <summary>
+        /// Get the tracking state of HMD.
+        /// </summary>
         public static SessionState SessionStatus
         {
             get
             {
-                return NRSessionManager.Instance.SessionStatus;
+                return m_TrackingStatus;
             }
         }
 
-        /**
-         * @brief Get the lost tracking reason of HMD.
-         */
+        /// <summary>
+        /// Get the lost tracking reason of HMD.
+        /// </summary>
         public static LostTrackingReason LostTrackingReason
         {
             get
@@ -45,44 +46,35 @@ namespace NRKernal
 
         private static Pose m_HeadPose;
 
-        /**
-         * @brief Get the pose of device in unity world coordinate.
-         * @return Pose of device.
-         */
+        /// <summary>
+        /// Get the pose of device in unity world coordinate.
+        /// </summary>
+        /// <returns>Pose of device.</returns>
         public static Pose HeadPose
         {
             get
             {
-                if (SessionStatus == SessionState.Tracking)
-                {
-                    Pose pose = Pose.identity;
-                    var result = GetHeadPoseByTime(ref pose);
-                    if (result)
-                    {
-                        m_HeadPose = pose;
-                    }
-                }
                 return m_HeadPose;
             }
         }
 
         public static bool GetHeadPoseByTime(ref Pose pose, UInt64 timestamp = 0, UInt64 predict = 0)
         {
-            if (SessionStatus == SessionState.Tracking)
+            if (NRSessionManager.Instance.IsInitialized)
             {
                 return NRSessionManager.Instance.NativeAPI.NativeHeadTracking.GetHeadPose(ref pose, timestamp, predict);
             }
             return false;
         }
 
-        /**
-         * @brief Get the pose of center camera between left eye and right eye.
-         */
+        /// <summary>
+        /// Get the pose of center camera between left eye and right eye.
+        /// </summary>
         public static Pose CenterEyePose
         {
             get
             {
-                if (SessionStatus != SessionState.Tracking)
+                if (NRSessionManager.Instance.IsInitialized)
                 {
                     return HeadPose;
                 }
@@ -98,14 +90,14 @@ namespace NRKernal
 
         private static EyePoseData m_EyePosFromHead;
 
-        /**
-         * @brief Get the offset position between eye and head.
-         */
+        /// <summary>
+        /// Get the offset position between eye and head.
+        /// </summary>
         public static EyePoseData EyePosFromHead
         {
             get
             {
-                if (SessionStatus == SessionState.Tracking)
+                if (NRSessionManager.Instance.IsInitialized)
                 {
                     m_EyePosFromHead.LEyePose = NRDevice.Instance.NativeHMD.GetEyePoseFromHead(NativeEye.LEFT);
                     m_EyePosFromHead.REyePose = NRDevice.Instance.NativeHMD.GetEyePoseFromHead(NativeEye.RIGHT);
@@ -115,10 +107,10 @@ namespace NRKernal
             }
         }
 
-        /**
-         * @brief Get the project matrix of camera in unity.
-         * @return project matrix of camera.
-         */
+        /// <summary>
+        /// Get the project matrix of camera in unity.
+        /// </summary>
+        /// <returns>project matrix of camera.</returns>
         public static EyeProjectMatrixData GetEyeProjectMatrix(out bool result, float znear, float zfar)
         {
             result = false;
@@ -127,11 +119,43 @@ namespace NRKernal
             return m_EyeProjectMatrix;
         }
 
-        /**
-         * @brief Get the list of trackables with specified filter.
-         * @param[out] trackableList A list where the returned trackable stored. The previous values will be cleared.
-         * @param filter Query filter.
-         */
+        public static void OnUpdate()
+        {
+            // Update head pos
+            Pose pose = Pose.identity;
+            bool getHeadPoseSuccess = false;
+            if (GetHeadPoseByTime(ref pose))
+            {
+                m_HeadPose = pose;
+                getHeadPoseSuccess = true;
+            }
+
+            if (getHeadPoseSuccess)
+            {
+                if (LostTrackingReason == LostTrackingReason.NONE)
+                {
+                    m_TrackingStatus = SessionState.Tracking;
+                }
+                else if (LostTrackingReason == LostTrackingReason.INITIALIZING)
+                {
+                    m_TrackingStatus = SessionState.UnInitialize;
+                }
+                else
+                {
+                    m_TrackingStatus = SessionState.LostTracking;
+                }
+            }
+            else
+            {
+                m_TrackingStatus = SessionState.UnInitialize;
+            }
+        }
+
+        /// <summary>
+        /// Get the list of trackables with specified filter.
+        /// </summary>
+        /// <param name="trackables">A list where the returned trackable stored.The previous values will be cleared.</param>
+        /// <param name="filter">Query filter.</param>
         public static void GetTrackables<T>(List<T> trackables, NRTrackableQueryFilter filter) where T : NRTrackable
         {
             trackables.Clear();
@@ -143,7 +167,5 @@ namespace NRKernal
 #endif
             NRSessionManager.Instance.NativeAPI.TrackableFactory.GetTrackables<T>(trackables, filter);
         }
-
-
     }
 }

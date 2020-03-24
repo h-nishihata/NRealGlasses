@@ -3,9 +3,9 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    /**
-    * @brief  Visualizes a single DetectedPlane in the Unity scene.
-    */
+    /// <summary>
+    /// Visualizes a single DetectedPlane in the Unity scene.
+    /// </summary>
     public class DetectedPlaneVisualizer : MonoBehaviour
     {
         private static int s_PlaneCount = 0;

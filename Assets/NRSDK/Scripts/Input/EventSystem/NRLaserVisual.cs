@@ -29,7 +29,7 @@ namespace NRKernal
 
         protected virtual void LateUpdate()
         {
-            if(!NRInput.LaserVisualActive)
+            if (!NRInput.LaserVisualActive)
             {
                 m_LineRenderer.enabled = false;
                 return;
@@ -52,7 +52,7 @@ namespace NRKernal
             m_LineRenderer.enabled = true;
             m_LineRenderer.useWorldSpace = false;
 
-            var startPoint = points[0];
+            var startPoint = transform.TransformPoint(0f, 0f, m_Raycaster.NearDistance);
             var endPoint = result.isValid ? points[pointCount - 1]
                 : (m_Raycaster.transform.position + m_Raycaster.transform.forward * defaultDistance);
 

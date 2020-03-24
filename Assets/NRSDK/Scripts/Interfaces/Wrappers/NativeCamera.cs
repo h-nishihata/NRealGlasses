@@ -12,9 +12,9 @@ namespace NRKernal
     using System;
     using System.Runtime.InteropServices;
 
-    /**
-    * @brief Session Native API.
-    */
+    /// <summary>
+    /// Session Native API.
+    /// </summary>
     internal partial class NativeCamera
     {
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -40,7 +40,7 @@ namespace NRKernal
 
         public NativeResolution GetResolution(UInt64 imageHandle)
         {
-            NativeResolution resolution = new NativeResolution(1280, 720);
+            NativeResolution resolution = new NativeResolution(0, 0);
             var result = NativeApi.NRRGBCameraImageGetResolution(m_NativeCameraHandle, imageHandle, ref resolution);
             NRDebugger.Log("[NativeCamera] GetResolution: " + result.ToString());
             return resolution;

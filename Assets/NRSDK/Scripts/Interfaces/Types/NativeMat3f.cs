@@ -22,6 +22,41 @@ namespace NRKernal
         [MarshalAs(UnmanagedType.Struct)]
         public NativeVector3f column2;
 
+        public float this[int i, int j]
+        {
+            get
+            {
+                if (j == 0)
+                {
+                    return column0[i];
+                }
+                if (j == 1)
+                {
+                    return column1[i];
+                }
+                if (j == 2)
+                {
+                    return column2[i];
+                }
+                return -1;
+            }
+            set
+            {
+                if (j == 0)
+                {
+                    column0[i] = value;
+                }
+                if (j == 1)
+                {
+                    column1[i] = value;
+                }
+                if (j == 2)
+                {
+                    column2[i] = value;
+                }
+            }
+        }
+
         public NativeMat3f(Vector3 vec0, Vector3 vec1, Vector3 vec2)
         {
             column0 = new NativeVector3f(vec0);

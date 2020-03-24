@@ -13,9 +13,9 @@ namespace NRKernal
     using System.Runtime.InteropServices;
     using UnityEngine;
 
-    /**
-    * @brief 6-dof Plane Tracking's Native API .
-    */
+    /// <summary>
+    /// 6-dof Plane Tracking's Native API .
+    /// </summary>
     internal partial class NativePlane
     {
         private NativeInterface m_NativeInterface;

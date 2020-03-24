@@ -13,9 +13,9 @@ namespace NRKernal
     using UnityEngine;
     using System.Runtime.InteropServices;
 
-    /**
-   * @brief HMD Eye offset Native API .
-   */
+    /// <summary>
+    /// HMD Eye offset Native API .
+    /// </summary>
     internal partial class NativeRenderring
     {
         private UInt64 m_RenderingHandle = 0;
@@ -90,12 +90,6 @@ namespace NRKernal
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRRenderingCreate(ref UInt64 out_rendering_handle);
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-            [DllImport(NativeConstants.NRNativeLibrary)]
-            public static extern NativeResult NRRenderingInitSetAndroidSurface(
-                UInt64 rendering_handle, IntPtr android_surface);
-#endif
-
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRRenderingStart(UInt64 rendering_handle);
 
@@ -109,6 +103,10 @@ namespace NRKernal
             public static extern NativeResult NRRenderingResume(UInt64 rendering_handle);
 
 #if UNITY_ANDROID && !UNITY_EDITOR
+            [DllImport(NativeConstants.NRNativeLibrary)]
+            public static extern NativeResult NRRenderingInitSetAndroidSurface(
+                UInt64 rendering_handle, IntPtr android_surface);
+
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRRenderingDoRender(UInt64 rendering_handle,
                 IntPtr left_eye_texture, IntPtr right_eye_texture, ref NativeMat4f head_pose);

@@ -18,6 +18,7 @@ namespace NRKernal
         public float HeadMoveSpeed = 1.0f; //regular speed
         public float HeadRotateSpeed = 1.0f; //How sensitive it with mouse
 
+        public GameObject DefaultControllerPanel;
         public GameObject ImageDefault;
         public GameObject ImageApp;
         public GameObject ImageConfirm;
@@ -32,7 +33,6 @@ namespace NRKernal
 
         private TouchActionState m_TouchAction;
         private int m_TouchActionCurFrame;
-
         private GameObject m_Target;
 
         enum TouchActionState
@@ -44,7 +44,7 @@ namespace NRKernal
             Down,
         };
 
-#if UNITY_EDITOR_WIN
+#if UNITY_EDITOR
         void Start()
         {
             DontDestroyOnLoad(this);
@@ -54,7 +54,7 @@ namespace NRKernal
         }
 #endif
 
-#if UNITY_EDITOR_WIN
+#if UNITY_EDITOR
         void LateUpdate()
         {
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
@@ -62,6 +62,35 @@ namespace NRKernal
                 UpdateControllerRotateByInput();
             }
 
+            if (NRInput.EmulateVirtualDisplayInEditor)
+            {
+                DefaultControllerPanel.SetActive(false);
+                UpdateVirtualControllerButtons();
+            }
+            else
+            {
+                DefaultControllerPanel.SetActive(true);
+                UpdateDefaultControllerButtons();
+            }
+
+            NREmulatorManager.Instance.NativeEmulatorApi.SetControllerSubmit();
+
+            if (NRInput.GetButtonDown(ControllerButton.TRIGGER))
+            {
+                NRDebugger.Log("Click down Trigger button !!!");
+            }
+            else if (NRInput.GetButtonDown(ControllerButton.APP))
+            {
+                NRDebugger.Log("Click down App button !!!");
+            }
+            else if (NRInput.GetButtonDown(ControllerButton.HOME))
+            {
+                NRDebugger.Log("Click down Home button !!!");
+            }
+        }
+
+        private void UpdateDefaultControllerButtons()
+        {
             if (Input.GetMouseButtonDown(0))
             {
                 SetConfirmButton(true);
@@ -72,22 +101,22 @@ namespace NRKernal
                 SetConfirmButton(false);
                 ImageConfirm.SetActive(false);
             }
-            if (Input.GetMouseButtonDown(2))
+            if (Input.GetMouseButtonDown(1))
             {
                 SetAppButton(true);
                 ImageApp.SetActive(true);
             }
-            if (Input.GetMouseButtonUp(2))
+            if (Input.GetMouseButtonUp(1))
             {
                 SetAppButton(false);
                 ImageApp.SetActive(false);
             }
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(2))
             {
                 SetHomeButton(true);
                 ImageHome.SetActive(true);
             }
-            if (Input.GetMouseButtonUp(1))
+            if (Input.GetMouseButtonUp(2))
             {
                 SetHomeButton(false);
                 ImageHome.SetActive(false);
@@ -126,22 +155,13 @@ namespace NRKernal
                     NREmulatorManager.Instance.NativeEmulatorApi.SetControllerIsTouching(false);
                 }
             }
+        }
 
-            NREmulatorManager.Instance.NativeEmulatorApi.SetControllerSubmit();
-
-
-            if (NRInput.GetButtonDown(ControllerButton.TRIGGER))
-            {
-                NRDebugger.Log("Click down Trigger button !!!");
-            }
-            else if (NRInput.GetButtonDown(ControllerButton.APP))
-            {
-                NRDebugger.Log("Click down App button !!!");
-            }
-            else if (NRInput.GetButtonDown(ControllerButton.HOME))
-            {
-                NRDebugger.Log("Click down Home button !!!");
-            }
+        private void UpdateVirtualControllerButtons()
+        {
+            NREmulatorManager.Instance.NativeEmulatorApi.SetControllerButtonState(0);
+            NREmulatorManager.Instance.NativeEmulatorApi.SetControllerIsTouching(true);
+            NREmulatorManager.Instance.NativeEmulatorApi.SetControllerTouchPoint(NRVirtualDisplayer.GetEmulatorScreenTouch().x, NRVirtualDisplayer.GetEmulatorScreenTouch().y);
         }
 #endif
 
@@ -172,7 +192,7 @@ namespace NRKernal
                 touchy = 0.1f * kHeight + ((float)m_TouchActionCurFrame / kActionMaxFrame) * (0.8f * kHeight);
             }
 
-            NREmulatorManager.Instance.NativeEmulatorApi.SetControllerTouchPoint(touchx, touchy);
+            NREmulatorManager.Instance.NativeEmulatorApi.SetControllerTouchPoint(touchx - 1f, touchy - 1f);
 
             if (m_TouchActionCurFrame == kActionMaxFrame)
             {
@@ -188,7 +208,7 @@ namespace NRKernal
 
         }
 
-        void UpdateControllerRotateByInput()
+        private void UpdateControllerRotateByInput()
         {
             float mouse_x = Input.GetAxis("Mouse X") * HeadRotateSpeed;
             float mouse_y = Input.GetAxis("Mouse Y") * HeadRotateSpeed;
@@ -204,7 +224,7 @@ namespace NRKernal
         {
             if (touch)
             {
-                NREmulatorManager.Instance.NativeEmulatorApi.SetControllerTouchPoint(kWidth / 2, 1.95f);
+                NREmulatorManager.Instance.NativeEmulatorApi.SetControllerTouchPoint(0f, 0.95f);
                 NREmulatorManager.Instance.NativeEmulatorApi.SetControllerIsTouching(true);
                 NREmulatorManager.Instance.NativeEmulatorApi.SetControllerButtonState(1);
             }
@@ -219,7 +239,7 @@ namespace NRKernal
         {
             if (touch)
             {
-                NREmulatorManager.Instance.NativeEmulatorApi.SetControllerTouchPoint(kWidth / 2, 0.05f);
+                NREmulatorManager.Instance.NativeEmulatorApi.SetControllerTouchPoint(0f, -0.95f);
                 NREmulatorManager.Instance.NativeEmulatorApi.SetControllerIsTouching(true);
                 NREmulatorManager.Instance.NativeEmulatorApi.SetControllerButtonState(1);
             }
@@ -234,7 +254,7 @@ namespace NRKernal
         {
             if (touch)
             {
-                NREmulatorManager.Instance.NativeEmulatorApi.SetControllerTouchPoint(kWidth / 2, kHeight / 2 - 0.01f);
+                NREmulatorManager.Instance.NativeEmulatorApi.SetControllerTouchPoint(0f, 0.01f);
                 NREmulatorManager.Instance.NativeEmulatorApi.SetControllerIsTouching(true);
                 NREmulatorManager.Instance.NativeEmulatorApi.SetControllerButtonState(1);
             }

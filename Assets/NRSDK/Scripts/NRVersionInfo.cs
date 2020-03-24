@@ -9,9 +9,9 @@
 
 namespace NRKernal
 {
-    /**
-    * @brief Holds information about Nreal SDK version info
-    */
+    /// <summary>
+    /// Holds information about Nreal SDK version info.
+    /// </summary>
     public class NRVersionInfo
     {
         public static string GetVersion()

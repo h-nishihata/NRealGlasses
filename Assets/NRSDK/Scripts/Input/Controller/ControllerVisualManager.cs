@@ -20,6 +20,16 @@ namespace NRKernal
         private ControllerState[] m_States;
         private IControllerVisual[] m_ControllerVisuals;
 
+        private void OnEnable()
+        {
+            NRInput.OnControllerStatesUpdated += OnControllerStatesUpdated;
+        }
+
+        private void OnDisable()
+        {
+            NRInput.OnControllerStatesUpdated -= OnControllerStatesUpdated;
+        }
+
         public void Init(ControllerState[] states)
         {
             this.m_States = states;
@@ -33,7 +43,12 @@ namespace NRKernal
             CreateControllerVisual(index, visualType);
         }
 
-        public void UpdateAllVisuals()
+        private void OnControllerStatesUpdated()
+        {
+            UpdateAllVisuals();
+        }
+
+        private void UpdateAllVisuals()
         {
             int availableCount = NRInput.GetAvailableControllersCount();
             if(availableCount > 1)

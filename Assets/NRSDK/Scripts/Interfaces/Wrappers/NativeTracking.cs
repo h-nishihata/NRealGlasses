@@ -12,9 +12,9 @@ namespace NRKernal
     using System;
     using System.Runtime.InteropServices;
 
-    /**
-    * @brief Native Tracking API.
-    */
+    /// <summary>
+    /// Native Tracking API.
+    /// </summary>
     internal partial class NativeTracking
     {
         private NativeInterface m_NativeInterface;

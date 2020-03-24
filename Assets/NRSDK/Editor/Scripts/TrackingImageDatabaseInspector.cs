@@ -159,6 +159,7 @@ namespace NRKernal
             {
                 return;
             }
+            Debug.Log("dirtyEntries count:" + dirtyEntries.Count);
 
             string cliBinaryPath;
             if (!NRTrackingImageDatabase.FindCliBinaryPath(out cliBinaryPath))
@@ -214,7 +215,7 @@ namespace NRKernal
                 image.Width = image.Height = (int)(defaultWidth * 1000);
             }
 
-            string param = string.Format("-image_path={0} -save_dir={1} -width={2}",
+            string param = string.Format("-image_path=\"{0}\" -save_dir=\"{1}\" -width=\"{2}\"",
                         imagepath, outpath, image.Width).Trim();
 
             string result = string.Empty;
@@ -364,13 +365,15 @@ namespace NRKernal
             string key = m_DatabaseForQualityJobs == null ? image.Name : m_DatabaseForQualityJobs.GUID + image.Name;
             if (!m_TempWidthDict.TryGetValue(key, out tempwidth))
             {
-
-                tempwidth = defaultWidth;
-                m_TempWidthDict.Add(key, tempwidth);
+                if (image.Width < float.Epsilon)
+                {
+                    image.Width = defaultWidth * 1000;
+                }
+                //tempwidth = defaultWidth;
+                tempwidth = m_TempWidthDict[key] = image.Width / 1000;
             }
             tempwidth = EditorGUILayout.FloatField(tempwidth, textFieldStyle, GUILayout.MaxWidth(80f));
-            m_TempWidthDict.Remove(key);
-            m_TempWidthDict.Add(key, tempwidth);
+            m_TempWidthDict[key] = tempwidth;
 
             var rect = GUILayoutUtility.GetLastRect();
             var e = Event.current;

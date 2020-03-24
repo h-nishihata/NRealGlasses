@@ -122,7 +122,6 @@ namespace NRToolkit.Sharing
         #region response
         private void OnSynContextResp(SynContextResp resp)
         {
-            //处理数据同步
             NetObjectManager.Instance.SynObjects(resp.netObjectLists);
         }
 

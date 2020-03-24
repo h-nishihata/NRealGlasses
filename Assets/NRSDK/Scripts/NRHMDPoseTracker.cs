@@ -10,28 +10,32 @@
 namespace NRKernal
 {
     using UnityEngine;
+    using System.Collections;
 
-    /**
-    * @brief HMDPoseTracker update the infomations of  pose tracker.
-    * 
-    * This component is used to initialize the camera parameter, update the device posture, 
-    * In addition, application can change TrackingType through this component.
-    */
+    /// <summary>
+    /// HMDPoseTracker update the infomations of pose tracker.
+    /// This component is used to initialize the camera parameter, update the device posture, 
+    /// In addition, application can change TrackingType through this component.
+    /// </summary>
     public class NRHMDPoseTracker : MonoBehaviour
     {
-        /**
-        * @brief HMD tracking type
-        */
+        public delegate void HMDPoseTrackerEvent();
+        public static event HMDPoseTrackerEvent OnHMDPoseReady;
+        public static event HMDPoseTrackerEvent OnHMDLostTracking;
+
+        /// <summary>
+        /// HMD tracking type
+        /// </summary>
         public enum TrackingType
         {
-            /**
-            * Track the position an rotation.
-            */
+            /// <summary>
+            /// Track the position an rotation.
+            /// </summary>
             Tracking6Dof = 0,
 
-            /**
-            * Track the rotation only.
-            */
+            /// <summary>
+            /// Track the rotation only.
+            /// </summary>
             Tracking3Dof = 1,
         }
 
@@ -46,37 +50,49 @@ namespace NRKernal
             }
         }
 
-        /**
-        * Use relative coordinates or not.
-        */
+        /// <summary>
+        /// Use relative coordinates or not.
+        /// </summary>
         public bool UseRelative = false;
+        private LostTrackingReason m_LastReason = LostTrackingReason.INITIALIZING;
 
         public Camera leftCamera;
         public Camera centerCamera;
         public Camera rightCamera;
 
-        private int m_LeftCullingMask;
-        private int m_RightCullingMask;
-        private bool isInited = false;
+        private bool m_Initialized = false;
+        private bool isReady = false;
 
         void Awake()
         {
-            m_LeftCullingMask = leftCamera.cullingMask;
-            m_RightCullingMask = rightCamera.cullingMask;
-
 #if UNITY_EDITOR
             leftCamera.cullingMask = 0;
             rightCamera.cullingMask = 0;
             centerCamera.cullingMask = -1;
             centerCamera.depth = 1;
-#else
-            leftCamera.cullingMask = 0;
-            rightCamera.cullingMask = 0;
 #endif
+
+            StartCoroutine(Initialize());
         }
 
-        void Init()
+        void LateUpdate()
         {
+            if (!m_Initialized)
+            {
+                return;
+            }
+            CheckHMDPoseState();
+            UpdatePoseByTrackingType();
+        }
+
+        private IEnumerator Initialize()
+        {
+            while (!NRSessionManager.Instance.IsInitialized && !m_Initialized)
+            {
+                Debug.Log("[NRHMDPoseTracker] Waitting to initialize.");
+                yield return new WaitForEndOfFrame();
+            }
+
 #if !UNITY_EDITOR
             bool result;
             var matrix_data = NRFrame.GetEyeProjectMatrix(out result, leftCamera.nearClipPlane, leftCamera.farClipPlane);
@@ -93,27 +109,18 @@ namespace NRKernal
                 centerCamera.transform.localPosition = (leftCamera.transform.localPosition + rightCamera.transform.localPosition) * 0.5f;
                 centerCamera.transform.localRotation = Quaternion.Lerp(leftCamera.transform.localRotation, rightCamera.transform.localRotation, 0.5f);
 
-                isInited = true;
+                m_Initialized = true;
             }
 #else
-            isInited = true;
+            m_Initialized = true;
 #endif
+            Debug.Log("[NRHMDPoseTracker] Initialized success.");
         }
 
-        void Update()
-        {
-            if (NRSessionManager.Instance.IsInitialized && !isInited)
-            {
-                this.Init();
-            }
-
-            UpdatePoseByTrackingType();
-        }
-
-        /**
-         * @brief Get the real pose of device in unity world coordinate by "UseRelative".
-         * @return Real pose of device.
-         */
+        /// <summary>
+        /// Get the real pose of device in unity world coordinate by "UseRelative".
+        /// </summary>
+        /// <param name="pose">Real pose of device.</param>
         public void GetHeadPose(ref Pose pose)
         {
             if (!NRSessionManager.Instance.IsInitialized)
@@ -129,14 +136,7 @@ namespace NRKernal
 
         private void UpdatePoseByTrackingType()
         {
-            Pose pose = Pose.identity;
-
-            if (NRFrame.GetHeadPoseByTime(ref pose))
-            {
-                SetCameraByTrackingStatus(true);
-            }
-
-            // update pos
+            Pose pose = NRFrame.HeadPose;
             switch (m_TrackingType)
             {
                 case TrackingType.Tracking6Dof:
@@ -164,20 +164,35 @@ namespace NRKernal
                 default:
                     break;
             }
+
+            centerCamera.transform.localPosition = (leftCamera.transform.localPosition + rightCamera.transform.localPosition) * 0.5f;
+            centerCamera.transform.localRotation = Quaternion.Lerp(leftCamera.transform.localRotation, rightCamera.transform.localRotation, 0.5f);
         }
 
-        private void SetCameraByTrackingStatus(bool isopen)
+        private void CheckHMDPoseState()
         {
-            if (isopen)
+            if (!NRSessionManager.Instance.IsInitialized || !m_Initialized)
             {
-                leftCamera.cullingMask = m_LeftCullingMask;
-                rightCamera.cullingMask = m_RightCullingMask;
+                return;
             }
-            else
+            var currentReason = NRFrame.LostTrackingReason;
+            if (m_LastReason == LostTrackingReason.NONE && currentReason != LostTrackingReason.NONE && isReady)
             {
-                leftCamera.cullingMask = 0;
-                rightCamera.cullingMask = 0;
+                if (OnHMDLostTracking != null)
+                {
+                    OnHMDLostTracking.Invoke();
+                }
             }
+            if (m_LastReason != LostTrackingReason.NONE && currentReason == LostTrackingReason.NONE && !isReady)
+            {
+                if (OnHMDPoseReady != null)
+                {
+                    OnHMDPoseReady.Invoke();
+                }
+                isReady = true;
+            }
+
+            m_LastReason = currentReason;
         }
     }
 }

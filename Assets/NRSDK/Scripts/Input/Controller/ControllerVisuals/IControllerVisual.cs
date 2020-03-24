@@ -13,9 +13,10 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /**
-    * @brief The interface contains methods for controller to update virtual controller visuals, and to show the feed back of user interactivation.
-    */
+    /// <summary>
+    /// The interface contains methods for controller to update virtual controller visuals, 
+    /// and to show the feed back of user interactivation.
+    /// </summary>
     public interface IControllerVisual
     {
         void SetActive(bool isActive);

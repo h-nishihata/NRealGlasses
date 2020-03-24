@@ -10,9 +10,6 @@
 namespace NRKernal
 {
     using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
 
     /// @cond EXCLUDE_FROM_DOXYGEN
     internal static class ControllerProviderFactory
@@ -21,8 +18,7 @@ namespace NRKernal
 
         public static ControllerProviderBase CreateControllerProvider(ControllerState[] states)
         {
-            ControllerProviderBase provider = null;
-            provider = CreateControllerProvider(androidControllerProviderType, states);
+            ControllerProviderBase provider = CreateControllerProvider(androidControllerProviderType, states);
             return provider;
         }
 

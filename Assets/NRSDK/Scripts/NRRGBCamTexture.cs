@@ -1,12 +1,21 @@
-﻿namespace NRKernal
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+namespace NRKernal
 {
     using System;
     using UnityEngine;
 
-    /**
-    * @brief Create a rgb camera texture.
-    */
-    public class NRRGBCamTexture : IDisposable
+    /// <summary>
+    /// Create a rgb camera texture.
+    /// </summary>
+    public class NRRGBCamTexture
     {
         public Action<RGBTextureFrame> OnUpdate;
 
@@ -14,7 +23,7 @@
         {
             get
             {
-                return NRRgbCamera.Resolution.width;
+                return NRRgbCamera.Resolution.height;
             }
         }
 
@@ -22,7 +31,7 @@
         {
             get
             {
-                return NRRgbCamera.Resolution.height;
+                return NRRgbCamera.Resolution.width;
             }
         }
 
@@ -49,9 +58,24 @@
 
         public RGBTextureFrame CurrentFrame;
 
-        public NRRGBCamTexture()
+        private bool m_IsInitilized = false;
+        private void Initilize()
         {
-            m_texture = new Texture2D(NRRgbCamera.Resolution.width, NRRgbCamera.Resolution.height, TextureFormat.RGB24, false);
+            if (m_IsInitilized)
+            {
+                return;
+            }
+            if (m_texture == null)
+            {
+                m_texture = CreateTex();
+            }
+            NRRgbCamera.Regist(this);
+            m_IsInitilized = true;
+        }
+
+        private Texture2D CreateTex()
+        {
+            return new Texture2D(NRRgbCamera.Resolution.width, NRRgbCamera.Resolution.height, TextureFormat.RGB24, false);
         }
 
         public void Play()
@@ -60,25 +84,29 @@
             {
                 return;
             }
-            NRRgbCamera.OnImageUpdate += OnFrameUpdated;
-            NRInternalUpdater.Instance.OnUpdate += UpdateTexture;
+            this.Initilize();
+            NRKernalUpdater.Instance.OnUpdate += UpdateTexture;
             NRRgbCamera.Play();
             m_IsPlaying = true;
         }
 
         public void Pause()
         {
-            Stop();
+            if (!m_IsPlaying)
+            {
+                return;
+            }
+            NRKernalUpdater.Instance.OnUpdate -= UpdateTexture;
+            m_IsPlaying = false;
         }
 
         public Texture2D GetTexture()
         {
+            if (m_texture == null)
+            {
+                m_texture = CreateTex();
+            }
             return m_texture;
-        }
-
-        private void OnFrameUpdated()
-        {
-            FrameCount++;
         }
 
         private void UpdateTexture()
@@ -94,35 +122,23 @@
 
             CurrentFrame.timeStamp = rgbRawDataFrame.timeStamp;
             CurrentFrame.texture = m_texture;
+            FrameCount++;
 
-            if (OnUpdate != null)
-            {
-                OnUpdate(CurrentFrame);
-            }
+            OnUpdate?.Invoke(CurrentFrame);
         }
 
         public void Stop()
         {
-            if (!m_IsPlaying)
+            if (!m_IsInitilized)
             {
                 return;
             }
-            NRRgbCamera.OnImageUpdate -= OnFrameUpdated;
-            NRInternalUpdater.Instance.OnUpdate -= UpdateTexture;
+            NRRgbCamera.UnRegist(this);
+            this.Pause();
             NRRgbCamera.Stop();
-            m_IsPlaying = false;
-        }
-
-        public void Dispose()
-        {
-            NRRgbCamera.Release();
             GameObject.Destroy(m_texture);
+            m_texture = null;
+            m_IsInitilized = false;
         }
-    }
-
-    public struct RGBTextureFrame
-    {
-        public UInt64 timeStamp;
-        public Texture2D texture;
     }
 }

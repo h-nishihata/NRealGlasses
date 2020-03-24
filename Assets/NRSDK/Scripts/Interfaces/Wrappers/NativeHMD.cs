@@ -13,9 +13,9 @@ namespace NRKernal
     using UnityEngine;
     using System.Runtime.InteropServices;
 
-    /**
-   * @brief HMD Eye offset Native API .
-   */
+    /// <summary>
+    /// HMD Eye offset Native API .
+    /// </summary>
     internal partial class NativeHMD
     {
         private UInt64 m_HmdHandle;
@@ -51,11 +51,11 @@ namespace NRKernal
             return (result_left == NativeResult.Success && result_right == NativeResult.Success && result_RGB == NativeResult.Success);
         }
 
-        public NativeResolution GetEyeResolution(NativeEye eye = NativeEye.LEFT)
+        public NativeResolution GetEyeResolution(NativeEye eye)
         {
             NativeResolution resolution = new NativeResolution(3840, 1080);
-            NativeApi.NRHMDGetEyeResolution(m_HmdHandle, (int)NativeEye.LEFT, ref resolution);
-            NRDebugger.Log("[NativeHMD GetEyeResolution]:" + resolution.ToString());
+            NativeApi.NRHMDGetEyeResolution(m_HmdHandle, (int)eye, ref resolution);
+            NRDebugger.LogFormat("[NativeHMD GetEyeResolution] eye:{0} resolution{1}:", eye, resolution.ToString());
             return resolution;
         }
 

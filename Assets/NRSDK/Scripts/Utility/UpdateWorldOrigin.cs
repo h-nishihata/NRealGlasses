@@ -11,9 +11,9 @@ namespace NRKernal
 {
     using UnityEngine;
 
-    /**
-    * @brief Align the world coordinate to the pose.
-    */
+    /// <summary>
+    /// Align the world coordinate to the pose.
+    /// </summary>
     public class UpdateWorldOrigin
     {
         /// <summary>

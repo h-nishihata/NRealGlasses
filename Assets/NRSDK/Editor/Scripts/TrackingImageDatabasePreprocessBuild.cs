@@ -15,9 +15,6 @@ namespace NRKernal
     {
         public override void OnPreprocessBuild(BuildTarget target, string path)
         {
-            // Set NRSDK eveironment.
-            SetNRSDKEveironment();
-
             var augmentedImageDatabaseGuids = AssetDatabase.FindAssets("t:NRTrackingImageDatabase");
             foreach (var databaseGuid in augmentedImageDatabaseGuids)
             {
@@ -27,17 +24,6 @@ namespace NRKernal
                 TrackingImageDatabaseInspector.BuildDataBase(database);
                 database.BuildIfNeeded();
             }
-        }
-
-        // Auto set the sdcard permission、portrait oritention、
-        public static void SetNRSDKEveironment()
-        {
-#if UNITY_ANDROID
-            PlayerSettings.Android.forceSDCardPermission = true;
-            PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
-            //PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new GraphicsDeviceType[1] { GraphicsDeviceType.OpenGLES3 });
-            //PlayerSettings.allowUnsafeCode = true;
-#endif
         }
     }
 }

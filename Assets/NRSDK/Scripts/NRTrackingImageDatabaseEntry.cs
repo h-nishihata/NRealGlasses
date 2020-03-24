@@ -16,9 +16,9 @@ namespace NRKernal
     using System.IO;
 #endif
 
-    /**
-     * @brief Hold the total infomation of a image data base item.
-     */
+    /// <summary>
+    /// Hold the total infomation of a image data base item.
+    /// </summary>
     [Serializable]
     public struct NRTrackingImageDatabaseEntry
     {

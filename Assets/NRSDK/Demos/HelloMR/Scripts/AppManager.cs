@@ -5,73 +5,46 @@ namespace NRKernal.NRExamples
     [DisallowMultipleComponent]
     public class AppManager : MonoBehaviour
     {
-        public float quitLongPressTime = 3f;
-        private float quitTimer = 0f;
-#if !UNITY_EDITOR
-        private bool hasNRInput;
-#endif
-
-        private void Awake()
+        private void OnEnable()
         {
-#if !UNITY_EDITOR
-            hasNRInput = FindObjectOfType<NRInput>() != null;
-#endif
+            NRInput.AddClickListener(ControllerHandEnum.Right, ControllerButton.HOME, OnHomeButtonClick);
+            NRInput.AddClickListener(ControllerHandEnum.Left, ControllerButton.HOME, OnHomeButtonClick);
+            NRInput.AddClickListener(ControllerHandEnum.Right, ControllerButton.APP, OnAppButtonClick);
+            NRInput.AddClickListener(ControllerHandEnum.Left, ControllerButton.APP, OnAppButtonClick);
+        }
+
+        private void OnDisable()
+        {
+            NRInput.RemoveClickListener(ControllerHandEnum.Right, ControllerButton.HOME, OnHomeButtonClick);
+            NRInput.RemoveClickListener(ControllerHandEnum.Left, ControllerButton.HOME, OnHomeButtonClick);
+            NRInput.RemoveClickListener(ControllerHandEnum.Right, ControllerButton.APP, OnAppButtonClick);
+            NRInput.RemoveClickListener(ControllerHandEnum.Left, ControllerButton.APP, OnAppButtonClick);
         }
 
         private void Update()
         {
-            if (NRInput.GetButtonDown(ControllerButton.HOME) || Input.GetKeyDown(KeyCode.R))
-            {
-                NRSessionManager.Instance.Recenter();
-            }
-
-            CheckQuit();
-        }
-
-        private void CheckQuit()
-        {
+#if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.Escape))
-            {
                 QuitApplication();
-                return;
-            }
-
-#if !UNITY_EDITOR
-            if (!hasNRInput)
-            {
-                if (Input.GetMouseButtonDown(1))
-                    QuitApplication();
-                return;
-            }
 #endif
-
-            if (quitLongPressTime == 0f && NRInput.GetButtonDown(ControllerButton.HOME))
-            {
-                QuitApplication();
-                return;
-            }
-
-            if (NRInput.GetButton(ControllerButton.HOME))
-            {
-                quitTimer += Time.deltaTime;
-                if (quitTimer > quitLongPressTime)
-                {
-                    quitTimer = 0f;
-                    QuitApplication();
-                }
-            }
-            else
-            {
-                quitTimer = 0f;
-            }
         }
 
-        private void QuitApplication()
+        private void OnHomeButtonClick()
+        {
+            NRHomeMenu.Toggle();
+        }
+
+        private void OnAppButtonClick()
+        {
+            NRHomeMenu.Hide();
+        }
+
+        public static void QuitApplication()
         {
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+            NRDevice.Instance.QuitApp();
 #endif
         }
     }

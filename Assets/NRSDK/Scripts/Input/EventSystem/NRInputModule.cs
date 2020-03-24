@@ -62,7 +62,7 @@ namespace NRKernal
 
                 var result = raycaster.FirstRaycastResult();
                 var scrollDelta = raycaster.GetScrollDelta();
-                var raycasterPos = raycaster.transform.position;
+                var raycasterPos = raycaster.BreakPoints[0];
                 var raycasterRot = raycaster.transform.rotation;
 
                 var hoverEventData = raycaster.HoverEventData;
@@ -279,7 +279,7 @@ namespace NRKernal
 
             if (newPressed == eventData.lastPress)
             {
-                if (eventData.raycaster != null && time < (eventData.clickTime + eventData.raycaster.clickInterval))
+                if (eventData.raycaster != null && time < (eventData.clickTime + NRInput.ClickInterval))
                 {
                     ++eventData.clickCount;
                 }
@@ -350,7 +350,7 @@ namespace NRKernal
             if (!eventData.useDragThreshold || eventData.raycaster == null) { return true; }
             var currentPos = eventData.position3D + (eventData.rotation * Vector3.forward) * eventData.pressDistance;
             var pressPos = eventData.pressPosition3D + (eventData.pressRotation * Vector3.forward) * eventData.pressDistance;
-            var threshold = eventData.raycaster.dragThreshold;
+            var threshold = NRInput.DragThreshold;
             return (currentPos - pressPos).sqrMagnitude >= threshold * threshold;
         }
 

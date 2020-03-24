@@ -160,7 +160,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1294764190774464}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2096a769c3a433e4d90a37eae8ff43fd, type: 3}
+  m_Script: {fileID: 11500000, guid: 11729a3e0c92b174ba36364ad83518bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   RGBCameraRig: {fileID: 4376461634753000}

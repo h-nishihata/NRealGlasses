@@ -13,11 +13,10 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /**
-     * @brief Manages AR system state and handles the session lifecycle.
-     * 
-     * Through this class, application can create a session, configure it, start/pause or stop it. 
-     */
+    /// <summary>
+    ///  Manages AR system state and handles the session lifecycle.
+    ///  this class, application can create a session, configure it, start/pause or stop it.
+    /// </summary>
     internal class NRTrackableManager
     {
         private Dictionary<UInt64, NRTrackable> m_TrackableDict = new Dictionary<UInt64, NRTrackable>();
@@ -104,20 +103,18 @@ namespace NRKernal
             }
             m_NativeInterface.NativeTrackable.DestroyTrackableList(trackablelist_handle);
         }
-
-        /**
-        * @brief Get the list of trackables with specified filter.
-        * @param[out] trackableList A list where the returned trackable stored. The previous values will be cleared.
-        * @param filter Query filter.
-        */
+        
+        /// <summary>
+        /// Get the list of trackables with specified filter.
+        /// </summary>
+        /// <param name="trackables">trackableList A list where the returned trackable stored. The previous values will be cleared</param>
+        /// <param name="filter">Query filter</param>
         public void GetTrackables<T>(List<T> trackables, NRTrackableQueryFilter filter) where T : NRTrackable
         {
             TrackableType t_type = GetTrackableType<T>();
 
-#if !UNITY_EDITOR_OSX
             // Update trackable by type
             UpdateTrackables(t_type);
-#endif
 
             // Find the new trackable in this frame
             m_NewTrackables.Clear();

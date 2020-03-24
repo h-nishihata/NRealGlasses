@@ -16,9 +16,9 @@ namespace NRKernal
     using System.Runtime.InteropServices;
     using UnityEngine;
 
-    /**
-    * @brief NRNativeRender oprate rendering-related things, provides the feature of optimized rendering and low latency.
-    */
+    /// <summary>
+    /// NRNativeRender oprate rendering-related things, provides the feature of optimized rendering and low latency.
+    /// </summary>
     public class NRRenderer : MonoBehaviour
     {
         /// @cond EXCLUDE_FROM_DOXYGEN
@@ -31,6 +31,9 @@ namespace NRKernal
 
         private const int SETRENDERTEXTUREEVENT = 0x0001;
         private const int STARTNATIVERENDEREVENT = 0x0002;
+        private const int RESUMENATIVERENDEREVENT = 0x0003;
+        private const int PAUSENATIVERENDEREVENT = 0x0004;
+        private const int STOPNATIVERENDEREVENT = 0x0005;
 
         public enum Eyes
         {
@@ -45,7 +48,7 @@ namespace NRKernal
         static NativeRenderring m_NativeRenderring { get; set; }
         /// @endcond
 
-        private const int EyeTextureCount = 5 * (int)Eyes.Count;
+        private const int EyeTextureCount = 3 * (int)Eyes.Count;
         private readonly RenderTexture[] eyeTextures = new RenderTexture[EyeTextureCount];
         private Dictionary<RenderTexture, IntPtr> m_RTDict = new Dictionary<RenderTexture, IntPtr>();
 
@@ -54,13 +57,20 @@ namespace NRKernal
         private int nextEyeTextureIdx = 0;
 #endif
 
-        /**
-         * @brief Initialize the render pipleline.
-         * 
-         * @param leftcamera Left Eye .
-         * @param leftcamera Right Eye .
-         * @param poseprovider provide the pose of camera every frame.
-         */
+        public static bool isLinearColorSpace
+        {
+            get
+            {
+                return QualitySettings.activeColorSpace == ColorSpace.Linear;
+            }
+        }
+
+        /// <summary>
+        /// Initialize the render pipleline.
+        /// </summary>
+        /// <param name="leftcamera">Left Eye.</param>
+        /// <param name="rightcamera">Right Eye.</param>
+        /// <param name="poseprovider">provide the pose of camera every frame.</param>
         public void Initialize(Camera leftcamera, Camera rightcamera, PoseProvideDelegage poseprovider)
         {
             if (m_IsInitialize || leftcamera == null || rightcamera == null)
@@ -84,7 +94,7 @@ namespace NRKernal
             CreateRenderTextures();
 
             m_IsInitialize = true;
-            Invoke("StartUp", 0.2f);
+            Invoke("StartUp", 0.5f);
 #endif
         }
 
@@ -99,32 +109,33 @@ namespace NRKernal
             GL.IssuePluginEvent(RenderThreadHandlePtr, STARTNATIVERENDEREVENT);
         }
 
-        /**
-         * @brief Pause render.
-         */
+        /// <summary>
+        /// Pause render.
+        /// </summary>
         public void Pause()
         {
-#if !UNITY_EDITOR
             if (!m_IsInitialize)
             {
                 return;
             }
-            m_NativeRenderring.Pause();
-#endif
+            GL.IssuePluginEvent(RenderThreadHandlePtr, STOPNATIVERENDEREVENT);
         }
 
-        /**
-         * @brief Resume render.
-         */
+        /// <summary>
+        /// Resume render.
+        /// </summary>
         public void Resume()
         {
-#if !UNITY_EDITOR
+            Invoke("DelayResume", 0.3f);
+        }
+
+        private void DelayResume()
+        {
             if (!m_IsInitialize)
             {
                 return;
             }
-            m_NativeRenderring.Resume();
-#endif
+            GL.IssuePluginEvent(RenderThreadHandlePtr, RESUMENATIVERENDEREVENT);
         }
 
 #if !UNITY_EDITOR
@@ -155,7 +166,7 @@ namespace NRKernal
 
         void CreateRenderTextures()
         {
-            var resolution = NRDevice.Instance.NativeHMD.GetEyeResolution();
+            var resolution = NRDevice.Instance.NativeHMD.GetEyeResolution(NativeEye.LEFT);
             NRDebugger.Log("[CreateRenderTextures]  resolution :" + resolution.ToString());
 
             for (int i = 0; i < EyeTextureCount; i++)
@@ -198,6 +209,23 @@ namespace NRKernal
             {
                 m_NativeRenderring.Start();
             }
+            else if (eventID == RESUMENATIVERENDEREVENT)
+            {
+                m_NativeRenderring.Resume();
+            }
+            else if (eventID == STOPNATIVERENDEREVENT)
+            {
+                m_NativeRenderring.Pause();
+            }
+            else if (eventID == STOPNATIVERENDEREVENT)
+            {
+                if (m_NativeRenderring != null)
+                {
+                    m_NativeRenderring.Destroy();
+                    m_NativeRenderring = null;
+                }
+                NRDevice.Instance.Destroy();
+            }
             else if (eventID == SETRENDERTEXTUREEVENT)
             {
                 FrameInfo framinfo = (FrameInfo)Marshal.PtrToStructure(m_NativeRenderring.FrameInfoPtr, typeof(FrameInfo));
@@ -211,15 +239,20 @@ namespace NRKernal
             GL.IssuePluginEvent(RenderThreadHandlePtr, SETRENDERTEXTUREEVENT);
         }
 
-#if !UNITY_EDITOR
-        void OnDestroy()
+        private bool m_IsDestroyed = false;
+        public void Destroy()
         {
-            if (m_NativeRenderring != null)
+            if (m_IsDestroyed)
             {
-                m_NativeRenderring.Destroy();
+                return;
             }
-            NRDevice.Instance.Destroy();
+            m_IsDestroyed = true;
+            GL.IssuePluginEvent(RenderThreadHandlePtr, STOPNATIVERENDEREVENT);
         }
-#endif
+
+        private void OnDestroy()
+        {
+            this.Destroy();
+        }
     }
 }

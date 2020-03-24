@@ -23,9 +23,9 @@ namespace NRKernal
     }
     /// @endcond
 
-    /**
-    * @brief The class enables an UGUI Canvas and its children to be interactive with NRInput raycasters.
-    */
+    /// <summary>
+    /// The class enables an UGUI Canvas and its children to be interactive with NRInput raycasters.
+    /// </summary>
     [RequireComponent(typeof(Canvas))]
     [DisallowMultipleComponent]
     public class CanvasRaycastTarget : UIBehaviour, ICanvasRaycastTarget

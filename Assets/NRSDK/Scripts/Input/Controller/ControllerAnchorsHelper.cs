@@ -23,9 +23,9 @@ namespace NRKernal
         LeftLaserAnchor
     }
 
-    /**
-    * @brief The class is for user to easily get the transform of common controller anchors.
-    */
+    /// <summary>
+    /// The class is for user to easily get the transform of common controller anchors.
+    /// </summary>
     public class ControllerAnchorsHelper : MonoBehaviour
     {
         [SerializeField]

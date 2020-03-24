@@ -11,28 +11,42 @@ namespace NRKernal.NRExamples
 
         private string m_ExtraInfoStr;
         private int m_MaxLine = 20;
+        private ControllerHandEnum m_CurrentDebugHand = ControllerHandEnum.Right;
 
         private void Update()
         {
-            if (NRInput.GetButtonDown(ControllerButton.TRIGGER))
+            if (NRInput.GetAvailableControllersCount() < 2)
             {
-                NRInput.TriggerHapticVibration(0.5f);
-                AddExtraInfo("trigger_btn_down");
+                m_CurrentDebugHand = NRInput.DomainHand;
+            }
+            else
+            {
+                if (NRInput.GetButtonDown(ControllerHandEnum.Right, ControllerButton.TRIGGER))
+                {
+                    m_CurrentDebugHand = ControllerHandEnum.Right;
+                }
+                else if (NRInput.GetButtonDown(ControllerHandEnum.Left, ControllerButton.TRIGGER))
+                {
+                    m_CurrentDebugHand = ControllerHandEnum.Left;
+                }
             }
 
-            if (NRInput.GetButtonDown(ControllerButton.HOME))
+            if (NRInput.GetButtonDown(m_CurrentDebugHand, ControllerButton.TRIGGER))
+                AddExtraInfo("trigger_btn_down");
+
+            if (NRInput.GetButtonDown(m_CurrentDebugHand, ControllerButton.HOME))
                 AddExtraInfo("home_btn_down");
 
-            if (NRInput.GetButtonDown(ControllerButton.APP))
+            if (NRInput.GetButtonDown(m_CurrentDebugHand, ControllerButton.APP))
                 AddExtraInfo("app_btn_down");
 
-            if (NRInput.GetButtonUp(ControllerButton.TRIGGER))
+            if (NRInput.GetButtonUp(m_CurrentDebugHand, ControllerButton.TRIGGER))
                 AddExtraInfo("trigger_btn_up");
 
-            if (NRInput.GetButtonUp(ControllerButton.HOME))
+            if (NRInput.GetButtonUp(m_CurrentDebugHand, ControllerButton.HOME))
                 AddExtraInfo("home_btn_up");
 
-            if (NRInput.GetButtonUp(ControllerButton.APP))
+            if (NRInput.GetButtonUp(m_CurrentDebugHand, ControllerButton.APP))
                 AddExtraInfo("app_btn_up");
 
             FollowMainCam();
@@ -50,7 +64,7 @@ namespace NRKernal.NRExamples
             mainInfoText.text =
                 "controller count: " + NRInput.GetAvailableControllersCount().ToString() + "\n"
                 + "type: " + NRInput.GetControllerType().ToString() + "\n"
-                + "domain hand: " + NRInput.DomainHand.ToString() + "\n"
+                + "current debug hand: " + m_CurrentDebugHand.ToString() + "\n"
                 + "position available: " + NRInput.GetControllerAvailableFeature(ControllerAvailableFeature.CONTROLLER_AVAILABLE_FEATURE_POSITION).ToString() + "\n"
                 + "rotation available: " + NRInput.GetControllerAvailableFeature(ControllerAvailableFeature.CONTROLLER_AVAILABLE_FEATURE_ROTATION).ToString() + "\n"
                 + "gyro available: " + NRInput.GetControllerAvailableFeature(ControllerAvailableFeature.CONTROLLER_AVAILABLE_FEATURE_GYRO).ToString() + "\n"
@@ -58,14 +72,18 @@ namespace NRKernal.NRExamples
                 + "mag available: " + NRInput.GetControllerAvailableFeature(ControllerAvailableFeature.CONTROLLER_AVAILABLE_FEATURE_MAG).ToString() + "\n"
                 + "battery available: " + NRInput.GetControllerAvailableFeature(ControllerAvailableFeature.CONTROLLER_AVAILABLE_FEATURE_BATTERY).ToString() + "\n"
                 + "vibration available: " + NRInput.GetControllerAvailableFeature(ControllerAvailableFeature.CONTROLLER_AVAILABLE_FEATURE_HAPTIC_VIBRATE).ToString() + "\n"
-                + "rotation: " + NRInput.GetRotation().ToString("F3") + "\n"
-                + "position: " + NRInput.GetPosition().ToString("F3") + "\n"
-                + "touch: " + NRInput.GetTouch().ToString("F3") + "\n"
-                + "trigger, home, app: " + NRInput.GetButton(ControllerButton.TRIGGER).ToString() + NRInput.GetButton(ControllerButton.HOME).ToString() + NRInput.GetButton(ControllerButton.APP).ToString() + "\n"
-                + "gyro: " + NRInput.GetGyro().ToString("F3") + "\n"
-                + "accel: " + NRInput.GetAccel().ToString("F3") + "\n"
-                + "mag: " + NRInput.GetMag().ToString("F3") + "\n"
-                + "battery: " + NRInput.GetControllerBattery();
+                + "rotation: " + NRInput.GetRotation(m_CurrentDebugHand).ToString("F3") + "\n"
+                + "position: " + NRInput.GetPosition(m_CurrentDebugHand).ToString("F3") + "\n"
+                + "touch: " + NRInput.GetTouch(m_CurrentDebugHand).ToString("F3") + "\n"
+                + "trigger button: " + NRInput.GetButton(m_CurrentDebugHand, ControllerButton.TRIGGER).ToString() + "\n"
+                + "home button: " + NRInput.GetButton(m_CurrentDebugHand, ControllerButton.HOME).ToString() + "\n"
+                + "app button: " + NRInput.GetButton(m_CurrentDebugHand, ControllerButton.APP).ToString() + "\n"
+                + "grip button: " + NRInput.GetButton(m_CurrentDebugHand, ControllerButton.GRIP).ToString() + "\n"
+                + "touchpad button: " + NRInput.GetButton(m_CurrentDebugHand, ControllerButton.TOUCHPAD_BUTTON).ToString() +"\n"
+                + "gyro: " + NRInput.GetGyro(m_CurrentDebugHand).ToString("F3") + "\n"
+                + "accel: " + NRInput.GetAccel(m_CurrentDebugHand).ToString("F3") + "\n"
+                + "mag: " + NRInput.GetMag(m_CurrentDebugHand).ToString("F3") + "\n"
+                + "battery: " + NRInput.GetControllerBattery(m_CurrentDebugHand);
             extraInfoText.text = m_ExtraInfoStr;
         }
 

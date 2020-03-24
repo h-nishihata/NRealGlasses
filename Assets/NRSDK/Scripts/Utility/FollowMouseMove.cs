@@ -11,7 +11,6 @@ namespace NRKernal
 {
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
     public class FollowMouseMove : MonoBehaviour
     {
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN
@@ -64,5 +63,4 @@ namespace NRKernal
         }
 #endif
     }
-    /// @endcond
 }

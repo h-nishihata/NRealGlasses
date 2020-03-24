@@ -11,19 +11,22 @@ namespace NRKernal
 {
     using UnityEngine;
 
-    /**
-    * @brief  Oprate AR system state and handles the session lifecycle for application layer.
-    */
-    public class NRSessionBehaviour : MonoBehaviour
+    /// <summary>
+    /// Oprate AR system state and handles the session lifecycle for application layer.
+    /// </summary>
+    public class NRSessionBehaviour : SingletonBehaviour<NRSessionBehaviour>
     {
-        /**
-         * @brief The SessionConfig of nrsession.
-         */
+        /// <summary>
+        /// The SessionConfig of nrsession.
+        /// </summary>
         [Tooltip("A scriptable object specifying the NRSDK session configuration.")]
         public NRSessionConfig SessionConfig;
 
-        void Awake()
+        new void Awake()
         {
+            base.Awake();
+
+            if (isDirty) return;
 #if !UNITY_EDITOR
             NRDebugger.EnableLog = Debug.isDebugBuild;
 #endif
@@ -33,6 +36,7 @@ namespace NRKernal
 
         void Start()
         {
+            if (isDirty) return;
             NRDebugger.Log("[SessionBehaviour DelayStart: StartSession]");
             NRSessionManager.Instance.StartSession();
             NRSessionManager.Instance.SetConfiguration(SessionConfig);
@@ -40,6 +44,8 @@ namespace NRKernal
 
         private void OnApplicationPause(bool pause)
         {
+            NRDebugger.LogFormat("[SessionBehaviour OnApplicationPause: {0}]", pause);
+            if (isDirty) return;
             if (pause)
             {
                 NRSessionManager.Instance.DisableSession();
@@ -52,12 +58,15 @@ namespace NRKernal
 
         void OnDisable()
         {
+            if (isDirty) return;
             NRDebugger.Log("[SessionBehaviour OnDisable: DisableSession]");
             NRSessionManager.Instance.DisableSession();
         }
 
-        void OnDestroy()
+        new void OnDestroy()
         {
+            if (isDirty) return;
+            base.OnDestroy();
             NRDebugger.Log("[SessionBehaviour OnDestroy DestroySession]");
             NRSessionManager.Instance.DestroySession();
         }

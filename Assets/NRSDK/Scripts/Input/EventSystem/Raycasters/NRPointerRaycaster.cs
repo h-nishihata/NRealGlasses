@@ -35,30 +35,28 @@ namespace NRKernal
         public bool showDebugRay = true;
         public bool enablePhysicsRaycast = true;
         public bool enableGraphicRaycast = true;
-        public float clickInterval = 0.3f;
-        public float dragThreshold = 0.02f;
 
         protected readonly List<NRPointerEventData> buttonEventDataList = new List<NRPointerEventData>();
         protected readonly List<RaycastResult> sortedRaycastResults = new List<RaycastResult>();
         protected readonly List<Vector3> breakPoints = new List<Vector3>();
 
+        public ControllerHandEnum RelatedHand { get; private set; }
         public List<Vector3> BreakPoints { get { return breakPoints; } }
         public NRPointerEventData HoverEventData { get { return buttonEventDataList.Count > 0 ? buttonEventDataList[0] : null; } }
-        public ReadOnlyCollection<NRPointerEventData> ButtonEventDataList
-        {
-            get { return buttonEventDataList.AsReadOnly(); }
-        }
+        public ReadOnlyCollection<NRPointerEventData> ButtonEventDataList { get { return buttonEventDataList.AsReadOnly(); } }
 
         protected override void Start()
         {
             base.Start();
+            ControllerTracker controllerTracker = GetComponentInParent<ControllerTracker>();
+            RelatedHand = controllerTracker ? controllerTracker.defaultHandEnum : NRInput.DomainHand;
             buttonEventDataList.Add(new NRPointerEventData(this, EventSystem.current));
         }
 
         // called by StandaloneInputModule, not supported
         public override void Raycast(PointerEventData eventData, List<RaycastResult> resultAppendList)
         {
-            
+
         }
 
         public virtual void Raycast()
@@ -128,7 +126,7 @@ namespace NRKernal
             return default(RaycastResult);
         }
 
-        private void Raycast(Ray ray, float distance, List<RaycastResult> raycastResults)
+        public void Raycast(Ray ray, float distance, List<RaycastResult> raycastResults)
         {
             var results = new List<RaycastResult>();
             if (enablePhysicsRaycast)
@@ -153,7 +151,7 @@ namespace NRKernal
             }
         }
 
-        private void PhysicsRaycast(Ray ray, float distance, List<RaycastResult> raycastResults)
+        public virtual void PhysicsRaycast(Ray ray, float distance, List<RaycastResult> raycastResults)
         {
             var hitCount = Physics.RaycastNonAlloc(ray, hits, distance, raycastMask);
             for (int i = 0; i < hitCount; ++i)
@@ -173,7 +171,7 @@ namespace NRKernal
             }
         }
 
-        private void GraphicRaycast(Canvas canvas, bool ignoreReversedGraphics, Ray ray, float distance, NRPointerRaycaster raycaster, List<RaycastResult> raycastResults)
+        public virtual void GraphicRaycast(Canvas canvas, bool ignoreReversedGraphics, Ray ray, float distance, NRPointerRaycaster raycaster, List<RaycastResult> raycastResults)
         {
             if (canvas == null) { return; }
 

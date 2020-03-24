@@ -29,6 +29,41 @@ namespace NRKernal
             Z = v.z;
         }
 
+        public float this[int i]
+        {
+            get
+            {
+                if (i == 0)
+                {
+                    return X;
+                }
+                if (i == 1)
+                {
+                    return Y;
+                }
+                if (i == 2)
+                {
+                    return Z;
+                }
+                return -1;
+            }
+            set
+            {
+                if (i == 0)
+                {
+                    X = value;
+                }
+                if (i == 1)
+                {
+                    Y = value;
+                }
+                if (i == 2)
+                {
+                    Z = value;
+                }
+            }
+        }
+
         public Vector3 ToUnityVector3()
         {
             return new Vector3(X, Y, -Z);

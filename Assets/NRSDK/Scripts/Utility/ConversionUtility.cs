@@ -11,15 +11,12 @@ namespace NRKernal
 {
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
     public class ConversionUtility
     {
         #region transform utility
         /// <summary>
         /// Get a matrix from position and rotation.
         /// </summary>
-        /// <param name="position"></param>
-        /// <param name="rotation"></param>
         /// <returns></returns>
         public static Matrix4x4 GetTMatrix(Vector3 position, Quaternion rotation)
         {
@@ -29,10 +26,6 @@ namespace NRKernal
         /// <summary>
         /// Get a matrix from position , rotation and scale.
         /// </summary>
-        /// <param name="position"></param>
-        /// <param name="rotation"></param>
-        /// <param name="scale"></param>
-        /// <returns></returns>
         public static Matrix4x4 GetTMatrix(Vector3 position, Quaternion rotation, Vector3 scale)
         {
             return Matrix4x4.TRS(position, rotation, scale);
@@ -41,8 +34,6 @@ namespace NRKernal
         /// <summary>
         /// Get the position from a matrix4x4.
         /// </summary>
-        /// <param name="matrix"></param>
-        /// <returns></returns>
         public static Vector3 GetPositionFromTMatrix(Matrix4x4 matrix)
         {
             Vector3 position;
@@ -56,8 +47,6 @@ namespace NRKernal
         /// <summary>
         /// Get the rotation from a matrix4x4.
         /// </summary>
-        /// <param name="matrix"></param>
-        /// <returns></returns>
         public static Quaternion GetRotationFromTMatrix(Matrix4x4 matrix)
         {
             Vector3 forward;
@@ -143,5 +132,4 @@ namespace NRKernal
             return pm;
         }
     }
-    /// @endcond
 }

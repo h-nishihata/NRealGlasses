@@ -13,10 +13,10 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /**
-    * @brief Update the transform of  a trackable.
-    */
-    internal partial class NRAnchor : MonoBehaviour
+    /// <summary>
+    /// Update the transform of  a trackable.
+    /// </summary>
+    public partial class NRAnchor : MonoBehaviour
     {
         private static Dictionary<Int64, NRAnchor> m_AnchorDict = new Dictionary<Int64, NRAnchor>();
 
@@ -24,13 +24,11 @@ namespace NRKernal
 
         private bool m_IsSessionDestroyed;
 
-        /**
-        * @brief Create a anchor for the trackable object 
-        * 
-        * Instantiate a NRAnchor object whick Update trackable pose every frame
-        * 
-        * @return NRAnchor
-        */
+        /// <summary>
+        /// Create a anchor for the trackable object
+        /// </summary>
+        /// <param name="trackable">Instantiate a NRAnchor object whick Update trackable pose every frame</param>
+        /// <returns>NRAnchor</returns>
         internal static NRAnchor Factory(NRTrackable trackable)
         {
             if (trackable == null)
@@ -83,9 +81,10 @@ namespace NRKernal
             m_AnchorDict.Remove(Trackable.GetDataBaseIndex());
         }
 
-        /**
-        * Check whether the session is already destroyed
-        */
+        /// <summary>
+        /// Check whether the session is already destroyed
+        /// </summary>
+        /// <returns></returns>
         private bool IsSessionDestroyed()
         {
             if (!m_IsSessionDestroyed)

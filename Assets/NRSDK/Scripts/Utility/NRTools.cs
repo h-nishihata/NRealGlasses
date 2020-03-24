@@ -12,7 +12,6 @@ namespace NRKernal
     using System;
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
     public class NRTools
     {
         public static string GetStreamingAssetsPath()
@@ -62,5 +61,4 @@ namespace NRKernal
             return Convert.ToUInt64(ts.TotalMilliseconds);
         }
     }
-    /// @endcond
 }

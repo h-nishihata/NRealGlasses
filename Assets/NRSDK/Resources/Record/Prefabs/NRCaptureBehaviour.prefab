@@ -148,12 +148,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1722814965189400}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 897bbf6f3ca6ec84585b0f2e717bbde9, type: 3}
+  m_Script: {fileID: 11500000, guid: 71ba6b0eef98d494882970f7b147094f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   RGBCameraRig: {fileID: 4176375558454158}
   CaptureCamera: {fileID: 20998077468541910}
-  DefaultTexture: {fileID: 2800000, guid: dd3f33d7cc002da4fbd1cf892fe05589, type: 3}
 --- !u!114 &114894762820006450
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -7,78 +7,78 @@
 * 
 *****************************************************************************/
 
-using UnityEngine;
-
 namespace NRKernal
 {
-    /// @cond EXCLUDE_FROM_DOXYGEN
+    using System;
+    using System.Runtime.InteropServices;
+    using UnityEngine;
+
+    /// <summary>
+    /// Manage the hmd device and quit 
+    /// </summary>
     public class NRDevice : SingleTon<NRDevice>
     {
         internal NativeHMD NativeHMD { get; set; }
-        public delegate void GlassEvent(string msg);
-        public GlassEvent OnGlassPutOn = (msg) => { };
-        public GlassEvent OnGlassPutOff = (msg) => { };
-        public GlassEvent OnGlassModeSwitch = (msg) => { };
-        public GlassEvent OnGlassConnect = (msg) => { };
-        public GlassEvent OnGlassDisConnect = (msg) => { };
-        public GlassEvent OnGlassIDResponse = (msg) => { };
+        private bool m_IsInit = false;
 
-        public const int TYPE_EVENT = 1000;
-        public const int TYPE_CONNECT = 1001;
-        public const int TYPE_DISCONNECT = 1002;
-        public const int TYPE_MDOE = 1003;
-        public const int TYPE_GLASSES_ID = 1004;
+#if UNITY_ANDROID && !UNITY_EDITOR
+        private AndroidJavaObject m_UnityActivity;
+#endif
 
-        internal AndroidJavaObject m_GlassService;
-        internal AndroidJavaObject m_UnityActivity;
-
-        public NRDevice()
+        /// <summary>
+        /// Init hmd device.
+        /// </summary>
+        public void Init()
         {
-            NativeHMD = new NativeHMD();
-            NativeHMD.Create();
+            if (m_IsInit)
+            {
+                return;
+            }
 
-            var listener = new GlassesCmdProxy(this);
+#if UNITY_ANDROID && !UNITY_EDITOR
+            // Init before all actions.
             AndroidJavaClass cls_UnityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
             m_UnityActivity = cls_UnityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-            m_GlassService = new AndroidJavaObject("com.nreal.tools.Util", m_UnityActivity, listener);
+            NativeApi.NRSDKInitSetAndroidActivity(m_UnityActivity.GetRawObject());
+            
+            NativeHMD = new NativeHMD();
+            NativeHMD.Create();
+#endif
+            m_IsInit = true;
         }
 
-        public void RequestGlassID()
+        /// <summary>
+        /// Quit the app.
+        /// </summary>
+        public void QuitApp()
         {
-            m_GlassService.Call("getGlassesId");
+            Debug.Log("Start To Quit Application...");
+            NRSessionManager.Instance.DestroySession();
+            Application.Quit();
         }
 
-        public void OprateGlassResponse(int eventid, string msg)
+        /// <summary>
+        /// Force kill the app.
+        /// </summary>
+        public void ForceKill()
         {
-            if (eventid == TYPE_EVENT)
+            Debug.Log("Start To kill Application...");
+            NRSessionManager.Instance.DestroySession();
+#if UNITY_ANDROID && !UNITY_EDITOR
+            if (m_UnityActivity != null)
             {
-                if (msg.Equals("Pnear"))
-                {
-                    OnGlassPutOn(msg);
-                }
-                else if (msg.Equals("Paway"))
-                {
-                    OnGlassPutOff(msg);
-                }
+                m_UnityActivity.Call("finish");
             }
-            else if (eventid == TYPE_CONNECT)
-            {
-                OnGlassConnect(null);
-            }
-            else if (eventid == TYPE_DISCONNECT)
-            {
-                OnGlassDisConnect(null);
-            }
-            else if (eventid == TYPE_MDOE)
-            {
-                OnGlassModeSwitch(msg);
-            }
-            else if (eventid == TYPE_GLASSES_ID)
-            {
-                OnGlassIDResponse(msg);
-            }
+
+            AndroidJavaClass processClass = new AndroidJavaClass("android.os.Process");
+            int myPid = processClass.CallStatic<int>("myPid");
+            processClass.CallStatic("killProcess", myPid);
+#endif
         }
 
+        /// <summary>
+        /// Destory hmd resource.
+        /// </summary>
         public void Destroy()
         {
             if (NativeHMD != null)
@@ -87,21 +87,13 @@ namespace NRKernal
                 NativeHMD = null;
             }
         }
-    }
 
-    public class GlassesCmdProxy : AndroidJavaProxy
-    {
-        private NRDevice m_GlassEventListener;
-        public GlassesCmdProxy(NRDevice manager) : base("com.nreal.tools.GlassesCmdCallback")
+        private struct NativeApi
         {
-            m_GlassEventListener = manager;
-        }
-
-        public void onReceive(int type, string value)
-        {
-            //Debug.LogFormat("onReceive type:{0} value:{1}", type, value);
-            m_GlassEventListener.OprateGlassResponse(type, value);
+#if UNITY_ANDROID && !UNITY_EDITOR
+            [DllImport(NativeConstants.NRNativeLibrary)]
+            public static extern NativeResult NRSDKInitSetAndroidActivity(IntPtr android_activity);
+#endif
         }
     }
-    /// @endcond
 }

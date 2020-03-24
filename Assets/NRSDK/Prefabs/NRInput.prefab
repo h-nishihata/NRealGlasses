@@ -684,10 +684,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Raycaster: {fileID: 114365659733525308}
-  m_ReticleTransform: {fileID: 4742331579938704}
   m_DefaultVisual: {fileID: 1159257566784280}
   m_HoverVisual: {fileID: 1654551142695050}
-  m_ReticleSizeRatio: 0.02
+  defaultDistance: 2
+  reticleSizeRatio: 0.02
 --- !u!114 &114136465592776054
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -708,8 +708,6 @@ MonoBehaviour:
   showDebugRay: 1
   enablePhysicsRaycast: 1
   enableGraphicRaycast: 1
-  clickInterval: 0.3
-  dragThreshold: 0.02
 --- !u!114 &114139586276295872
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -722,10 +720,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Raycaster: {fileID: 114213534414106972}
-  m_ReticleTransform: {fileID: 4962230485894392}
   m_DefaultVisual: {fileID: 1596328029370450}
   m_HoverVisual: {fileID: 1368888740607042}
-  m_ReticleSizeRatio: 0.02
+  defaultDistance: 2
+  reticleSizeRatio: 0.02
 --- !u!114 &114175920380357810
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -758,9 +756,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 222eeeb49264ff94fbce878fd9a7844d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_EmulateVirtualDisplayInEditor: 0
   m_OverrideCameraCenter: {fileID: 0}
   m_AnchorHelper: {fileID: 114939486973187162}
   m_RaycastMode: 1
+  m_ClickInterval: 0.3
+  m_DragThreshold: 0.02
 --- !u!114 &114191024025845342
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -835,8 +836,6 @@ MonoBehaviour:
   showDebugRay: 1
   enablePhysicsRaycast: 1
   enableGraphicRaycast: 1
-  clickInterval: 0.3
-  dragThreshold: 0.02
 --- !u!114 &114227979651569082
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -919,8 +918,6 @@ MonoBehaviour:
   showDebugRay: 1
   enablePhysicsRaycast: 1
   enableGraphicRaycast: 1
-  clickInterval: 0.3
-  dragThreshold: 0.02
 --- !u!114 &114391769588978060
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -992,11 +989,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf3983bc83ca1d248aa880cd64e474dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravityDirection: {x: 0, y: -1, z: 0}
-  showOnHitOnly: 0
-  segmentLength: 0.05
   m_Raycaster: {fileID: 114213534414106972}
   m_LineRenderer: {fileID: 120361578531404918}
+  showOnHitOnly: 0
+  defaultDistance: 1.2
 --- !u!114 &114734632939615126
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1050,10 +1046,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Raycaster: {fileID: 114136465592776054}
-  m_ReticleTransform: {fileID: 4617419561544250}
   m_DefaultVisual: {fileID: 1386060407708078}
   m_HoverVisual: {fileID: 1010628892252494}
-  m_ReticleSizeRatio: 0.02
+  defaultDistance: 2
+  reticleSizeRatio: 0.02
 --- !u!114 &114824842534676054
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1065,11 +1061,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf3983bc83ca1d248aa880cd64e474dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravityDirection: {x: 0, y: -1, z: 0}
-  showOnHitOnly: 0
-  segmentLength: 0.05
   m_Raycaster: {fileID: 114365659733525308}
   m_LineRenderer: {fileID: 120195849519913344}
+  showOnHitOnly: 0
+  defaultDistance: 1.2
 --- !u!114 &114939486973187162
 MonoBehaviour:
   m_ObjectHideFlags: 1

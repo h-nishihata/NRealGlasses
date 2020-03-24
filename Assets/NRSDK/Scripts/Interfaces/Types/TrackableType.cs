@@ -9,40 +9,40 @@
 
 namespace NRKernal
 {
-    /**
-    * @brief Tracable object type.
-    */
+    /// <summary>
+    /// Tracable object type.
+    /// </summary>
     public enum TrackableType
     {
-        /**
-         * TRACKABLE_BASE means the base object of trackable.
-         */
+        /// <summary>
+        /// TRACKABLE_BASE means the base object of trackable.
+        /// </summary>
         TRACKABLE_BASE = 0,
 
-        /**
-         * TRACKABLE_PLANE means the trackable object is a plane.
-         */
+        /// <summary>
+        /// TRACKABLE_PLANE means the trackable object is a plane.
+        /// </summary>
         TRACKABLE_PLANE = 1,
 
-        /**
-         * TRACKABLE_IMAGE means the trackable object is a tracking image.
-         */
+        /// <summary>
+        /// TRACKABLE_IMAGE means the trackable object is a tracking image.
+        /// </summary>
         TRACKABLE_IMAGE = 2,
     }
 
-    /**
-    * @brief Trackable image's finding mode.
-    */
+    /// <summary>
+    /// Trackable image's finding mode.
+    /// </summary>
     public enum TrackableImageFindingMode
     {
-        /**
-         * Disable image tracking.
-         */
+        /// <summary>
+        /// Disable image tracking.
+        /// </summary>
         DISABLE = 0,
 
-        /**
-         * Enable image tracking.
-         */
+        /// <summary>
+        /// Enable image tracking.
+        /// </summary>
         ENABLE = 1,
     }
 }

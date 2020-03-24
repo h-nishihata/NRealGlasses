@@ -12,9 +12,9 @@ namespace NRKernal
     using UnityEngine;
     using UnityEngine.Serialization;
 
-    /**
-     * @brief A configuration used to track the world.
-     */
+    /// <summary>
+    /// A configuration used to track the world.
+    /// </summary>
     [CreateAssetMenu(fileName = "NRKernalSessionConfig", menuName = "NRSDK/SessionConfig", order = 1)]
     public class NRSessionConfig : ScriptableObject
     {
@@ -37,10 +37,10 @@ namespace NRKernal
         [Tooltip("A scriptable object specifying the NRSDK TrackingImageDatabase configuration.")]
         public NRTrackingImageDatabase TrackingImageDatabase;
 
-        /**
-         * @brief ValueType check if two NRSessionConfig objects are equal.
-         * @return True if the two NRSessionConfig objects are value-type equal, otherwise false.
-         */
+        /// <summary>
+        /// ValueType check if two NRSessionConfig objects are equal.
+        /// </summary>
+        /// <returns>True if the two NRSessionConfig objects are value-type equal, otherwise false.</returns>
         public override bool Equals(object other)
         {
             NRSessionConfig otherConfig = other as NRSessionConfig;
@@ -60,17 +60,18 @@ namespace NRKernal
             return true;
         }
 
-        /**
-         * @brief Return a hash code for this object.
-         */
+        /// <summary>
+        /// Return a hash code for this object.
+        /// </summary>
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
 
-        /**
-         * @brief ValueType copy from another SessionConfig object into this one.
-         */
+        /// <summary>
+        /// ValueType copy from another SessionConfig object into this one.
+        /// </summary>
+        /// <param name="other"></param>
         public void CopyFrom(NRSessionConfig other)
         {
             OptimizedRendering = other.OptimizedRendering;

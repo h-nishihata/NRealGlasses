@@ -11,10 +11,9 @@ namespace NRKernal
 {
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
-    /**
-    * @brief The class is to emulate controller with mouse and keyboard input in unity editor mode
-    */
+    /// <summary>
+    /// The class is to emulate controller with mouse and keyboard input in unity editor mode
+    /// </summary>
     public class EditorControllerProvider : ControllerProviderBase
     {
         private Vector2 mouseDelta = new Vector2();
@@ -111,5 +110,4 @@ namespace NRKernal
             }
         }
     }
-    /// @endcond
 }

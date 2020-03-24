@@ -9,40 +9,40 @@
 
 namespace NRKernal
 {
-    /**
-    * @brief Trackable plane type.
-    */
+    /// <summary>
+    /// Trackable plane type.
+    /// </summary>
     public enum TrackablePlaneType
     {
-        /**
-         * HORIZONTAL trackable plane.
-         */
+        /// <summary>
+        /// HORIZONTAL trackable plane.
+        /// </summary>
         HORIZONTAL = 0,
 
-        /**
-         * VERTICAL trackable plane.
-         */
+        /// <summary>
+        /// VERTICAL trackable plane.
+        /// </summary>
         VERTICAL = 1,
 
-        /**
-         * INVALID trackable plane.
-         */
+        /// <summary>
+        /// INVALID trackable plane.
+        /// </summary>
         INVALID = 2
     }
 
-    /**
-   * @brief Trackable plane's finding mode.
-   */
+    /// <summary>
+    /// Trackable plane's finding mode.
+    /// </summary>
     public enum TrackablePlaneFindingMode
     {
-        /**
-        * Disable plane detection.
-        */
+        /// <summary>
+        /// Disable plane detection.
+        /// </summary>
         DISABLE = 0,
 
-        /**
-         * Enable plane detection.
-         */
+        /// <summary>
+        ///  Enable plane detection.
+        /// </summary>
         HORIZONTAL = 1,
     }
 }

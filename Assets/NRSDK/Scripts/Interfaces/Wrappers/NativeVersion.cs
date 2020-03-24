@@ -11,9 +11,9 @@ namespace NRKernal
 {
     using System.Runtime.InteropServices;
 
-    /**
-    * @brief 6-dof Trackable Image Tracking's Native API .
-    */
+    /// <summary>
+    /// 6-dof Trackable Image Tracking's Native API .
+    /// </summary>
     internal partial class NativeVersion
     {
         public static string GetVersion()

@@ -15,9 +15,9 @@ namespace NRKernal
     using UnityEngine;
 #endif
 
-    /**
-     * @brief Manage the Total Native API .
-     */
+    /// <summary>
+    /// Manage the Total Native API.
+    /// </summary>
     internal partial class NativeInterface
     {
         public NativeInterface()

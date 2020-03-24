@@ -2,6 +2,7 @@
 {
     using UnityEngine;
 
+    /// <summary>
     /// Uses 4 frame corner objects to visualize an TrackingImage.
     /// </summary>
     public class TrackingImageVisualizer : MonoBehaviour

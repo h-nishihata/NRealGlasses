@@ -12,9 +12,9 @@ namespace NRKernal
     using System;
     using UnityEngine;
 
-    /**
-     * @brief A trackable image in the real world detected by NRInternel.
-     */
+    /// <summary>
+    /// A trackable image in the real world detected by NRInternel.
+    /// </summary>
     public class NRTrackableImage : NRTrackable
     {
         internal NRTrackableImage(UInt64 nativeHandle, NativeInterface nativeInterface)
@@ -22,17 +22,18 @@ namespace NRKernal
         {
         }
 
-        /**
-         * @brief Gets the position and orientation of the marker's center in Unity world space.
-         */
+        /// <summary>
+        /// Gets the position and orientation of the marker's center in Unity world space.
+        /// </summary>
+        /// <returns></returns>
         public override Pose GetCenterPose()
         {
             return NativeInterface.NativeTrackableImage.GetCenterPose(TrackableNativeHandle);
         }
 
-        /**
-         * @brief Gets the width of marker.
-         */
+        /// <summary>
+        /// Gets the width of marker.
+        /// </summary>
         public float ExtentX
         {
             get
@@ -41,9 +42,9 @@ namespace NRKernal
             }
         }
 
-        /**
-         * @brief Gets the height of marker.
-         */
+        /// <summary>
+        /// Gets the height of marker.
+        /// </summary>
         public float ExtentZ
         {
             get
@@ -52,10 +53,10 @@ namespace NRKernal
             }
         }
 
-        /**
-         * @brief Get the size of trackable image .
-         * @return size of trackable imag(width、height).
-         */
+        /// <summary>
+        /// Get the size of trackable image.
+        /// size of trackable imag(width、height).
+        /// </summary>
         public Vector2 Size
         {
             get

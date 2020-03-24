@@ -13,16 +13,18 @@ namespace NRKernal
     using System;
     using System.IO;
     using UnityEngine;
-    using static NRKernal.NRHMDPoseTracker;
+    using System.Collections;
+    using NRKernal.Record;
 
-    /**
-    * @brief Manages AR system state and handles the session lifecycle.
-    * 
-    * Through this class, application can create a session, configure it, start/pause or stop it. 
-    */
-    internal class NRSessionManager
+    /// <summary>
+    ///  Manages AR system state and handles the session lifecycle.
+    ///  this class, application can create a session, configure it, start/pause or stop it.
+    /// </summary>
+    public class NRSessionManager
     {
         private static NRSessionManager m_Instance;
+        private bool m_IsInitialized = false;
+        private bool m_IsDestroyed = false;
 
         public static NRSessionManager Instance
         {
@@ -36,26 +38,9 @@ namespace NRKernal
             }
         }
 
-        private SessionState m_SessionStatus = SessionState.UnInitialize;
-
-        /**
-         * Current session status.
-         */
-        public SessionState SessionStatus
-        {
-            get
-            {
-                return m_SessionStatus;
-            }
-            private set
-            {
-                m_SessionStatus = value;
-            }
-        }
-
-        /**
-         * Current lost tracking reason.
-         */
+        /// <summary>
+        /// Current lost tracking reason.
+        /// </summary>
         public LostTrackingReason LostTrackingReason
         {
             get
@@ -71,15 +56,16 @@ namespace NRKernal
             }
         }
 
-        public NRSessionBehaviour SessionBehaviour { get; set; }
+        public NRSessionBehaviour NRSessionBehaviour { get; private set; }
 
-        public NRHMDPoseTracker NRHMDPoseTracker { get; set; }
+        public NRHMDPoseTracker NRHMDPoseTracker { get; private set; }
 
-        public NativeInterface NativeAPI { get; set; }
+        internal NativeInterface NativeAPI { get; private set; }
 
-        private NRRenderer m_NRRenderringController { get; set; }
+        private NRRenderer NRRenderer { get; set; }
 
-        private bool m_IsInitialized = false;
+        public NRVirtualDisplayer VirtualDisplayer { get; set; }
+
         public bool IsInitialized
         {
             get
@@ -90,33 +76,45 @@ namespace NRKernal
 
         public void CreateSession(NRSessionBehaviour session)
         {
-            if (SessionBehaviour != null)
+            if (IsInitialized || session == null)
+            {
+                return;
+            }
+            if (NRSessionBehaviour != null)
             {
                 NRDebugger.LogError("Multiple SessionBehaviour components cannot exist in the scene. " +
                   "Destroying the newest.");
-                GameObject.Destroy(session);
+                GameObject.DestroyImmediate(session.gameObject);
                 return;
             }
+            NRDevice.Instance.Init();
             NativeAPI = new NativeInterface();
-#if !UNITY_EDITOR_OSX
-            SessionStatus = NativeAPI.NativeTracking.Create() ? SessionState.Created : SessionState.UnInitialize;
-#endif
-            SessionBehaviour = session;
+            NativeAPI.NativeTracking.Create();
+            NRSessionBehaviour = session;
 
             NRHMDPoseTracker = session.GetComponent<NRHMDPoseTracker>();
-            TrackingMode mode = NRHMDPoseTracker.TrackingMode == TrackingType.Tracking3Dof ? TrackingMode.MODE_3DOF : TrackingMode.MODE_6DOF;
+            TrackingMode mode = NRHMDPoseTracker.TrackingMode == NRHMDPoseTracker.TrackingType.Tracking3Dof ? TrackingMode.MODE_3DOF : TrackingMode.MODE_6DOF;
             SetTrackingMode(mode);
-
             this.DeployData();
+            NRKernalUpdater.Instance.StartCoroutine(OnUpdate());
+        }
+
+        private IEnumerator OnUpdate()
+        {
+            while (!m_IsDestroyed)
+            {
+                NRFrame.OnUpdate();
+                yield return new WaitForEndOfFrame();
+            }
         }
 
         private void DeployData()
         {
-            if (SessionBehaviour.SessionConfig == null)
+            if (NRSessionBehaviour.SessionConfig == null)
             {
                 return;
             }
-            var database = SessionBehaviour.SessionConfig.TrackingImageDatabase;
+            var database = NRSessionBehaviour.SessionConfig.TrackingImageDatabase;
             if (database == null)
             {
                 NRDebugger.Log("augmented image data base is null!");
@@ -124,11 +122,6 @@ namespace NRKernal
             }
             string deploy_path = database.TrackingImageDataOutPutPath;
             NRDebugger.Log("[TrackingImageDatabase] DeployData to path :" + deploy_path);
-            //if (Directory.Exists(database.TrackingImageDataPath))
-            //{
-            //    NRDebugger.Log("augmented image data is exit!");
-            //    return;
-            //}
             ZipUtility.UnzipFile(database.RawData, deploy_path, NativeConstants.ZipKey);
         }
 
@@ -138,16 +131,12 @@ namespace NRKernal
             {
                 return;
             }
-#if !UNITY_EDITOR_OSX
             NativeAPI.Configration.UpdateConfig(config);
-#endif
         }
 
         private void SetTrackingMode(TrackingMode mode)
         {
-#if !UNITY_EDITOR_OSX
             NativeAPI.NativeTracking.SetTrackingMode(mode);
-#endif
         }
 
         public void Recenter()
@@ -156,9 +145,7 @@ namespace NRKernal
             {
                 return;
             }
-#if !UNITY_EDITOR_OSX
             NativeAPI.NativeTracking.Recenter();
-#endif
         }
 
         public static void SetAppSettings(bool useOptimizedRendering)
@@ -177,17 +164,17 @@ namespace NRKernal
                 return;
             }
 
-            var config = SessionBehaviour.SessionConfig;
+            var config = NRSessionBehaviour.SessionConfig;
             if (config != null)
             {
                 SetAppSettings(config.OptimizedRendering);
 #if !UNITY_EDITOR
                 if (config.OptimizedRendering)
                 {
-                    if (SessionBehaviour.gameObject.GetComponent<NRRenderer>() == null)
+                    if (NRSessionBehaviour.gameObject.GetComponent<NRRenderer>() == null)
                     {
-                        m_NRRenderringController = SessionBehaviour.gameObject.AddComponent<NRRenderer>();
-                        m_NRRenderringController.Initialize(NRHMDPoseTracker.leftCamera, NRHMDPoseTracker.rightCamera, NRHMDPoseTracker.GetHeadPose);
+                        NRRenderer = NRSessionBehaviour.gameObject.AddComponent<NRRenderer>();
+                        NRRenderer.Initialize(NRHMDPoseTracker.leftCamera, NRHMDPoseTracker.rightCamera, NRHMDPoseTracker.GetHeadPose);
                     }
                 }
 #endif
@@ -196,17 +183,11 @@ namespace NRKernal
             {
                 SetAppSettings(false);
             }
-#if !UNITY_EDITOR_OSX
             NativeAPI.NativeTracking.Start();
 
-            bool result = NativeAPI.NativeHeadTracking.Create();
-            if (result)
-            {
-                SessionStatus = SessionState.Tracking;
-            }
-#endif
+            NativeAPI.NativeHeadTracking.Create();
 
-#if UNITY_EDITOR_WIN
+#if UNITY_EDITOR
             InitEmulator();
 #endif
             m_IsInitialized = true;
@@ -218,10 +199,22 @@ namespace NRKernal
             {
                 return;
             }
-#if !UNITY_EDITOR_OSX
-            if (NativeAPI.NativeTracking.Pause()) SessionStatus = SessionState.Paused;
-            if (m_NRRenderringController != null) m_NRRenderringController.Pause();
-#endif
+            if (NRVirtualDisplayer.RunInBackground)
+            {
+                if (VirtualDisplayer != null)
+                {
+                    VirtualDisplayer.Pause();
+                }
+                NativeAPI.NativeTracking.Pause();
+                if (NRRenderer != null)
+                {
+                    NRRenderer.Pause();
+                }
+            }
+            else
+            {
+                NRDevice.Instance.ForceKill();
+            }
         }
 
         public void ResumeSession()
@@ -230,24 +223,30 @@ namespace NRKernal
             {
                 return;
             }
-#if !UNITY_EDITOR_OSX
-            if (NativeAPI.NativeTracking.Resume()) SessionStatus = SessionState.Tracking;
-            if (m_NRRenderringController != null) m_NRRenderringController.Resume();
-#endif
+            NativeAPI.NativeTracking.Resume();
+            if (NRRenderer != null)
+            {
+                NRRenderer.Resume();
+            }
+            if (VirtualDisplayer != null)
+            {
+                VirtualDisplayer.Resume();
+            }
         }
 
         public void DestroySession()
         {
-            if (!m_IsInitialized)
+            if (!m_IsInitialized && m_IsDestroyed)
             {
                 return;
             }
-#if !UNITY_EDITOR_OSX
+            m_IsDestroyed = true;
             NativeAPI.NativeHeadTracking.Destroy();
-            if (NativeAPI.NativeTracking.Destroy()) SessionStatus = SessionState.Stopped;
+            NativeAPI.NativeTracking.Destroy();
+            VirtualDisplayer?.Destory();
+            NRRenderer?.Destroy();
             NRDevice.Instance.Destroy();
-            SessionBehaviour = null;
-#endif
+            FrameCaptureContextFactory.DisposeAllContext();
             m_IsInitialized = false;
         }
 

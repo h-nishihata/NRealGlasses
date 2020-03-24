@@ -37,11 +37,41 @@ namespace NRKernal
             this.raycaster = raycaster;
         }
 
-        public virtual bool GetPress() { return NRInput.GetButton(ControllerButton.TRIGGER); }
+        public virtual bool GetPress()
+        {
+            if (raycaster is NRMultScrPointerRaycaster)
+            {
+                return MultiScreenController.SystemButtonState.pressing;
+            }
+            else
+            {
+                return NRInput.GetButton(raycaster.RelatedHand, ControllerButton.TRIGGER);
+            }
+        }
 
-        public virtual bool GetPressDown() { return NRInput.GetButtonDown(ControllerButton.TRIGGER); }
+        public virtual bool GetPressDown()
+        {
+            if (raycaster is NRMultScrPointerRaycaster)
+            {
+                return MultiScreenController.SystemButtonState.pressDown;
+            }
+            else
+            {
+                return NRInput.GetButtonDown(raycaster.RelatedHand, ControllerButton.TRIGGER);
+            }
+        }
 
-        public virtual bool GetPressUp() { return NRInput.GetButtonUp(ControllerButton.TRIGGER); }
+        public virtual bool GetPressUp()
+        {
+            if (raycaster is NRMultScrPointerRaycaster)
+            {
+                return MultiScreenController.SystemButtonState.pressUp;
+            }
+            else
+            {
+                return NRInput.GetButtonUp(raycaster.RelatedHand, ControllerButton.TRIGGER);
+            }
+        }
 
     }
     /// @endcond

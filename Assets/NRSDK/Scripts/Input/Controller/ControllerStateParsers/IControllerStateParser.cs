@@ -13,9 +13,9 @@ namespace NRKernal
     using System.Collections.Generic;
     using UnityEngine;
 
-    /**
-    * @brief The interface contains methods for controller provider to parse raw sates to usable states.
-    */
+    /// <summary>
+    /// The interface contains methods for controller provider to parse raw sates to usable states.
+    /// </summary>
     public interface IControllerStateParser
     {
         void ParserControllerState(ControllerState state);

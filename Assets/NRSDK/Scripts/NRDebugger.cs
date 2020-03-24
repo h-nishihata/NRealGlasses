@@ -11,10 +11,9 @@ namespace NRKernal
 {
     using UnityEngine;
 
-    /// @cond EXCLUDE_FROM_DOXYGEN
-    /**
-     * @brief A tool for log.
-     */
+    /// <summary>
+    /// A tool for log.
+    /// </summary>
     public class NRDebugger
     {
 #if UNITY_EDITOR
@@ -33,6 +32,14 @@ namespace NRKernal
             if (EnableLog)
             {
                 Debug.Log(message, context);
+            }
+        }
+
+        static public void LogFormat(string format, params object[] args)
+        {
+            if (EnableLog)
+            {
+                Debug.LogFormat(format, args);
             }
         }
 
@@ -62,5 +69,4 @@ namespace NRKernal
             }
         }
     }
-    /// @endcond
 }

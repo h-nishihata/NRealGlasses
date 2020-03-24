@@ -12,7 +12,7 @@ namespace NRKernal
     /**
      * The reason of HMD untracked.
      */
-    internal enum LostTrackingReason
+    public enum LostTrackingReason
     {
         NONE = 0,
 

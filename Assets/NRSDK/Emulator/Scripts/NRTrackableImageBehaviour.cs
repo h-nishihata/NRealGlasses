@@ -35,7 +35,7 @@ namespace NRKernal
 #endif
         }
 
-#if UNITY_EDITOR_WIN
+#if UNITY_EDITOR
         private void Update()
         {
             float extent = transform.lossyScale.x * 1000;

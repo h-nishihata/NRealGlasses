@@ -13,9 +13,9 @@ namespace NRKernal
     using System.Runtime.InteropServices;
     using UnityEngine;
 
-    /**
-    * @brief 6-dof Head Tracking's Native API .
-    */
+    /// <summary>
+    /// 6-dof Head Tracking's Native API .
+    /// </summary>
     internal partial class NativeHeadTracking
     {
         private NativeInterface m_NativeInterface;
@@ -37,8 +37,7 @@ namespace NRKernal
         {
             UInt64 headPoseHandle = 0;
             UInt64 hmd_nanos = 0;
-            var result = NativeApi.NRTrackingGetHMDTimeNanos(m_NativeInterface.TrackingHandle, ref hmd_nanos);
-            var temp = hmd_nanos;
+            NativeApi.NRTrackingGetHMDTimeNanos(m_NativeInterface.TrackingHandle, ref hmd_nanos);
             if (timestamp != 0)
             {
                 hmd_nanos = timestamp;

@@ -18,7 +18,7 @@ namespace NRKernal
     {
         [SerializeField]
         private NRPointerRaycaster m_Raycaster;
-        private bool m_IsEnabled = false;
+        private bool m_IsEnabled;
 
         private Transform CameraCenter
         {
@@ -30,19 +30,29 @@ namespace NRKernal
 
         private void Start()
         {
-            UpdateTracker();
+            OnControllerStatesUpdated();
         }
 
-        private void Update()
+        private void OnEnable()
         {
-            if (CameraCenter == null)
-                return;
-            m_IsEnabled = NRInput.RaycastMode == RaycastModeEnum.Gaze;
+            NRInput.OnControllerStatesUpdated += OnControllerStatesUpdated;
+        }
+
+        private void OnDisable()
+        {
+            NRInput.OnControllerStatesUpdated -= OnControllerStatesUpdated;
+        }
+
+        private void OnControllerStatesUpdated()
+        {
             UpdateTracker();
         }
 
         private void UpdateTracker()
         {
+            if (CameraCenter == null)
+                return;
+            m_IsEnabled = NRInput.RaycastMode == RaycastModeEnum.Gaze;
             m_Raycaster.gameObject.SetActive(m_IsEnabled);
             if (m_IsEnabled)
             {

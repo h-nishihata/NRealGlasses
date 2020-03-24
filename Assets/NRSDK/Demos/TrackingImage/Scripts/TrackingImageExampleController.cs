@@ -3,9 +3,9 @@
     using System.Collections.Generic;
     using UnityEngine;
 
-    /**
-    * @brief Controller for TrackingImage example.
-    */
+    /// <summary>
+    /// Controller for TrackingImage example.
+    /// </summary>
     public class TrackingImageExampleController : MonoBehaviour
     {
         // A prefab for visualizing an TrackingImage.

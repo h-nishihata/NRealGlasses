@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Sculptures/Scenes/Throne.unity
-    guid: c72881d21c39f453eb08f0245d371107
+    path: Assets/Sculptures/Scenes/Ether.unity
+    guid: 9384a4b907a344e23b63d1222970b02d
   m_configObjects: {}
